@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2020 IoT.bzh
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+description: Renesas RCAR DU
+
+compatible: "renesas,rcar-du"
+
+include: [base.yaml]
+
+properties:
+
+    label:
+      required: true
+
+    reg:
+      required: true
+    
+    vsps:
+      type: phandle
+      required: true

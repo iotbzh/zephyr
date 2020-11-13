@@ -9,6 +9,8 @@
 #include <dt-bindings/interrupt-controller/arm-gic.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/clock/renesas-cpg.h>
+#include <dt-bindings/rcar/rcar-display.h>
+
 / {
 	cpus {
 		#address-cells = <1>;
@@ -143,6 +145,32 @@
 			<&cpg CPG_CORE CPG_CORE_CLK_S3D4>;
 			current-speed = <115200>;
 			label = "scif2";
+		};
+		fcpvd1: fcp@fea2f000 {
+			compatible = "renesas,rcar-fcpv";
+			reg = <0xfea2f000 0x200>;
+			clocks = <&cpg CPG_MOD 602>;
+			label = "rcar_fcpvd1";
+		};
+
+		vspd1: vsp@fea28000 {
+			compatible = "renesas,rcar-vsp";
+			status = "okay";
+			reg = < 0xfea28000 0x4000 >;
+			clocks = <&cpg CPG_MOD 622>;
+			label = "rcar_vsp";
+			renesas,fcp = <&fcpvd1>;
+		};
+
+	};
+	meta {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		display: display@0 {
+			compatible = "renesas,rcar-display";
+			label = "DISPLAY";
+			reg = <0>;
 		};
 	};
 };

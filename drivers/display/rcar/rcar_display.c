@@ -5,13 +5,15 @@
  */
 
 
-#define DT_DRV_COMPAT rcar_display
+#define DT_DRV_COMPAT renesas_rcar_display
+
 
 #include <drivers/display.h>
+#include <dt-bindings/rcar/rcar-display.h>
 
 #include "rcar_display.h"
 #include "rcar_du.h"
-#include "rcar_vspd.h"
+#include "rcar_vsp.h"
 #include "rcar_lvds.h"
 #include "rcar_hdmi.h"
 #include "rcar_display.h"
@@ -117,6 +119,10 @@ typedef struct {
 	int lvds;
 } rcar_display_pipeline_t;
 
+/* Cf 35.1 of UserManual. This is the list of paths (aka 'pipeline' in DRM world) we support
+ * For our demo, only RCAR_DISPLAY_LVDS0_SUPERIMPOSED is of interest
+ */
+
 static rcar_display_pipeline_t display_paths[] = {
 	{
 		.vsp = RCAR_VSPD0,
@@ -142,11 +148,19 @@ static rcar_display_pipeline_t display_paths[] = {
 		.hdmi = RCAR_HDMI1,
 		.lvds = -1,
 	},
+	// RCAR_DISPLAY_LVDS0_SUPERIMPOSED. VSPD1 superimposes over VSPD0, on DU0
+	{
+		.vsp = RCAR_VSPD1,
+		.du = RCAR_DU0,
+		.hdmi = -1,
+		.lvds = RCAR_LVDS0,
+	},
+
 };
 
 
 struct rcar_display_data {
-    struct device * vspd;
+    struct device * vsp;
     rcar_display_pipeline_t * display_path;
 	void * fb;
 	uint32_t width;
@@ -157,15 +171,15 @@ struct rcar_display_data {
 static void *rcar_display_get_framebuffer(const struct device *dev)
 {
     struct rcar_display_data *data = (struct rcar_display_data *)dev->data;
-    struct device *vspd  = data->vspd;
+    struct device *vsp_device  = data->vsp;
 
-    struct vspd_driver_api * api = (struct vspd_driver_api *) vspd->api;
+    struct vsp_driver_api * api = (struct vsp_driver_api *) vsp_device->api;
 
     rcar_display_pipeline_t *dp = data->display_path;
 
- 	api->get_resolution(vspd, dp->vsp, &data->width, &data->height);
+ 	api->get_resolution(vsp_device, &data->width, &data->height);
 
-    return api->get_framebuffer(vspd, dp->vsp);
+    return api->get_framebuffer(vsp_device);
 
 }
 
@@ -176,18 +190,15 @@ static int rcar_display_init(const struct device *dev)
 
 	LOG_INF("Initializing rcar display driver");
 
-    const struct device * vspd = device_get_binding("rcar-vspd");
+    const struct device * vsp = device_get_binding("rcar-vsp");
 
-    if (!vspd) {
-		LOG_ERR("Failed to get vspd");
+    if (!vsp) {
+		LOG_ERR("Failed to get vsp");
 		return -ENOENT;
 	}
 
-    data->vspd = (struct device *)vspd;
-
-// TODO Put that in device tree
-//    data->display_path = &display_paths[DT_INST_PROP(0, display_path)];
-    data->display_path = &display_paths[0];
+    data->vsp = (struct device *)vsp;
+    data->display_path = &display_paths[DT_INST_PROP(0, display_path)];
 
 	return 0;
 }
@@ -210,7 +221,7 @@ static int rcar_display_write(const struct device *dev,
 
 	uint32_t *srcbuf = buf;
 
-	// Copy line by line. TODO use DMAC.
+	// Copy line by line. TODO use DMAC or investigate on HW blending.
 	for (int jx = 0; jx < desc->height; jx++) {
 		uint32_t *dest = data->fb;
 		dest += data->width*(jx+Y_ORIG+y) + x+X_ORIG;
@@ -309,7 +320,16 @@ static const struct display_driver_api rcar_display_api = {
 
 static struct rcar_display_data rcar_display_data;
 
-DEVICE_AND_API_INIT(rcar_display, DT_PROP(DT_N_S_display, label), &rcar_display_init,
-		    &rcar_display_data, NULL, APPLICATION,
+
+#define RCAR_DISPLAY_INIT(n) \
+	DEVICE_AND_API_INIT(rcar_display, DT_INST_LABEL(n), &rcar_display_init, \
+		    &rcar_display_data, NULL, APPLICATION,\
 		    CONFIG_APPLICATION_INIT_PRIORITY, &rcar_display_api);
 
+DT_INST_FOREACH_STATUS_OKAY(RCAR_DISPLAY_INIT)
+
+#if DT_HAS_COMPAT_STATUS_OKAY(DT_DRV_COMPAT)
+#warning OKAY
+#else
+#warning RCAR pas OKAY
+#endif

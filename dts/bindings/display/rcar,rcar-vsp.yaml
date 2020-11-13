@@ -1,0 +1,23 @@
+#
+# Copyright (c) 2020 IoT.bzh
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+description: Renesas RCAR VSP
+
+compatible: "renesas,rcar-vsp"
+
+include: [base.yaml]
+
+properties:
+
+    label:
+      required: true
+
+    reg:
+      required: true
+
+    renesas,fcp:
+      type: phandle
+      required: true

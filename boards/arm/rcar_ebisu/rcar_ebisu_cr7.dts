@@ -17,11 +17,17 @@
 		zephyr,ipc_shm = &sram_shm;
 		zephyr,ipc = &mfis;
 		zephyr,can-primary = &can0;
+		zephyr,graphics_fb = &graphics_framebuffer;
 	};
 
 	sram_shm: memory@42000000 {
 		compatible = "mmio-sram";
 		reg = <0x42000000 0x400000>;
+	};
+
+	graphics_framebuffer: memory@6c000000 {
+		compatible = "mmio-sram";
+		reg = <0x6c000000 0x01000000>;
 	};
 
 	leds {
@@ -38,19 +44,6 @@
 			label = "User switch";
 			gpios = <&gpio5 6 GPIO_ACTIVE_LOW>;
 		};
-	};
-
-	display {
-		compatible = "renesas,rcar-display";
-		label = "DISPLAY";
-		display_path = < 0 >;
-		status = "okay";
-	};
-
-	vspd {
-		compatible = "renesas,rcar_vspd";
-		label = "rcar-vspd";
-		status = "okay";
 	};
 
 	aliases {
@@ -81,4 +74,9 @@
 	 * by another component: u-boot, linux ..
 	 */
 	status = "disabled";
+};
+
+&display {
+	status = "okay";
+	display_path = < DISPLAY_LVDS0_SUPERIMPOSED >;
 };

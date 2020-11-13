@@ -100,4 +100,13 @@ config HWINFO_PSOC6
 	help
 	  Enable Cypress PSoC-6 hwinfo driver.
 
+config HWINFO_RCAR
+	bool "RCAR device ID"
+	default y
+	depends on SOC_RENESAS_RCAR_CR7
+	select HWINFO_HAS_DRIVER
+	help
+	  Enable RCAR hwinfo driver
+
+
 endif

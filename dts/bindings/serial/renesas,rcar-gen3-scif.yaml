@@ -1,0 +1,15 @@
+description: Renesas R-Car Gen3 UART controller
+
+compatible: "renesas,rcar-gen3-scif"
+
+include: uart-controller.yaml
+
+properties:
+    reg:
+      required: true
+
+    interrupts:
+      required: true
+
+    clocks:
+      required: true

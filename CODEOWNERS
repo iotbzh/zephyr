@@ -267,6 +267,7 @@
 /drivers/serial/*nuvoton*                 @ssekar15
 /drivers/serial/*npcx*                    @MulinChao
 /drivers/serial/*apbuart*                 @martin-aberg
+/drivers/serial/*rcar*                    @aaillet
 /drivers/net/                             @jukkar @tbursztyka
 /drivers/ptp_clock/                       @jukkar
 /drivers/pwm/*rv32m1*                     @henrikbrixandersen

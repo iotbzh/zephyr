@@ -28,7 +28,8 @@ manifest:
   # Please add items below based on alphabetical order
   projects:
     - name: cmsis
-      revision: 542b2296e6d515b265e25c6b7208e8fea3014f90
+      remote: iotbzh
+      revision: 50f7137c475c0752cc7fcab508801989415a02f5
       path: modules/hal/cmsis
     - name: hal_atmel
       revision: 9f0a699a2f0253dc9688211ef696daa7b8fadb75

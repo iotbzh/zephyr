@@ -55,6 +55,7 @@
 /soc/arm/ti_simplelink/cc32xx/            @vanti
 /soc/arm/ti_simplelink/msp432p4xx/        @Mani-Sadhasivam
 /soc/arm/xilinx_zynqmp/                   @stephanosio
+/soc/arm/renesas_rcar/                    @julien-massot
 /soc/xtensa/intel_s1000/                  @sathishkuttan @dcpleung
 /arch/x86/                                @jhedberg @andrewboie @jenmwms @aasthagr
 /arch/nios2/                              @andrewboie @wentongwu
@@ -336,6 +337,7 @@
 /dts/arm/armv7-r.dtsi                     @bbolen @stephanosio
 /dts/arm/armv8-a.dtsi                     @carlocaione
 /dts/arm/xilinx/                          @bbolen @stephanosio
+/dts/arm/renesas/                         @julien-massot
 /dts/x86/                                 @jhedberg
 /dts/xtensa/xtensa.dtsi                   @ydamigos
 /dts/xtensa/intel/                        @dcpleung

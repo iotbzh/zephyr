@@ -40,6 +40,21 @@
 			status = "okay";
 		};
 
+		arch_timer: timer@f0000200 {
+			compatible = "arm,arm-timer";
+			reg = <0xf0000200 0x4ff>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_PPI 13 IRQ_TYPE_LEVEL
+				      IRQ_DEFAULT_PRIORITY>,
+				     <GIC_PPI 14 IRQ_TYPE_LEVEL
+				      IRQ_DEFAULT_PRIORITY>,
+				     <GIC_PPI 11 IRQ_TYPE_LEVEL
+				      IRQ_DEFAULT_PRIORITY>,
+				     <GIC_PPI 10 IRQ_TYPE_LEVEL
+				      IRQ_DEFAULT_PRIORITY>;
+			label = "arch_timer";
+		};
+
 		gpio5: gpio@e6055000 {
 			compatible = "renesas,rcar-gen3-gpio";
 			reg = <0xe6055000 0x50>;

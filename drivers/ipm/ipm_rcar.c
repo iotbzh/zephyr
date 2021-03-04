@@ -29,7 +29,7 @@ static K_SEM_DEFINE(send_sem, 0, 1);
 /* Config MFIS */
 struct rcar_mfis_config {
 	uint32_t reg_addr;
-	char *clock_controller;
+	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 	void (*irq_config_func)(const struct device *dev);
 };
@@ -131,21 +131,12 @@ static int rcar_mfis_ipm_set_enabled(const struct device *dev, int enable)
 static int rcar_mfis_init(const struct device *dev)
 {
 	const struct rcar_mfis_config *config = dev->config;
-	const struct device *clk;
 	int ret;
 
-	if (config->clock_controller) {
-		clk = device_get_binding(config->clock_controller);
-		if (!clk) {
-			return -ENODEV;
-		}
-
-		ret = clock_control_on(clk,
+	ret = clock_control_on(config->clock_dev,
 			       (clock_control_subsys_t *) &config->mod_clk);
-
-		if (ret < 0) {
-			return ret;
-		}
+	if (ret < 0) {
+		return ret;
 	}
 
 	config->irq_config_func(dev);
@@ -166,7 +157,7 @@ static void rcar_mfis_config_func(const struct device *dev);
 static const struct rcar_mfis_config rcar_mfis_config = {
 	.reg_addr = DT_INST_REG_ADDR(0),
 	.irq_config_func = rcar_mfis_config_func,
-	.clock_controller = DT_INST_CLOCKS_LABEL(0),
+	.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(0)),
 	.mod_clk.module = DT_INST_CLOCKS_CELL(0, module),
 	.mod_clk.domain = DT_INST_CLOCKS_CELL(0, domain),
 };

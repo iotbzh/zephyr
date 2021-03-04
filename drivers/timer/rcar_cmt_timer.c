@@ -15,7 +15,6 @@
 #define TIMER_BASE_ADDR		DT_INST_REG_ADDR(0)
 #define TIMER_CLOCK_FREQUENCY	DT_INST_PROP(0, clock_frequency)
 
-#define CLOCK_CONTROLLER        DT_INST_CLOCKS_LABEL(0)
 #define CLOCK_SUBSYS            DT_INST_CLOCKS_CELL(0, module)
 
 #define CYCLES_PER_SEC		TIMER_CLOCK_FREQUENCY
@@ -72,7 +71,7 @@ int z_clock_driver_init(const struct device *device)
 	uint32_t reg_val;
 	int i, ret;
 
-	clk = device_get_binding(CLOCK_CONTROLLER);
+	clk = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(0));
 	if (!clk) {
 		return -ENODEV;
 	}

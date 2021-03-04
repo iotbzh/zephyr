@@ -25,7 +25,7 @@ struct gpio_rcar_cfg {
 	uint32_t reg_addr;
 	int reg_size;
 	init_func_t init_func;
-	char *clock_controller;
+	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 };
 
@@ -245,21 +245,12 @@ static int gpio_rcar_pin_interrupt_configure(const struct device *dev,
 static int gpio_rcar_init(const struct device *dev)
 {
 	const struct gpio_rcar_cfg *config = DEV_GPIO_CFG(dev);
-	const struct device *clk;
 	int ret;
 
-	if (config->clock_controller) {
-		clk = device_get_binding(config->clock_controller);
-		if (!clk) {
-			return -ENODEV;
-		}
-
-		ret = clock_control_on(clk,
+	ret = clock_control_on(config->clock_dev,
 			       (clock_control_subsys_t *) &config->mod_clk);
-
-		if (ret < 0) {
-			return ret;
-		}
+	if (ret < 0) {
+		return ret;
 	}
 
 	config->init_func(dev);
@@ -297,7 +288,7 @@ static const struct gpio_driver_api gpio_rcar_driver_api = {
 		.reg_addr = DT_INST_REG_ADDR(n), \
 		.reg_size = DT_INST_REG_SIZE(n), \
 		.init_func = gpio_rcar_##n##_init, \
-		.clock_controller = DT_INST_CLOCKS_LABEL(n), \
+		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),     \
 		.mod_clk.module = \
 		DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module), \
 		.mod_clk.domain = \

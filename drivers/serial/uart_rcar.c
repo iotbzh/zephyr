@@ -16,7 +16,7 @@
 struct uart_rcar_cfg {
 	uint32_t reg_addr;
 	int reg_size;
-	char *clock_controller;
+	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 	struct rcar_cpg_clk bus_clk;
 };
@@ -246,28 +246,19 @@ static int uart_rcar_init(const struct device *dev)
 {
 	const struct uart_rcar_cfg *config = DEV_UART_CFG(dev);
 	struct uart_rcar_data *data = DEV_UART_DATA(dev);
-	const struct device *clk;
 	int ret;
 
-	if (config->clock_controller) {
-		clk = device_get_binding(config->clock_controller);
-		if (!clk) {
-			return -ENODEV;
-		}
+	ret = clock_control_on(config->clock_dev,
+			(clock_control_subsys_t *) &config->mod_clk);
+	if (ret < 0) {
+		return ret;
+	}
 
-		ret = clock_control_on(clk,
-				(clock_control_subsys_t *) &config->mod_clk);
-
-		if (ret < 0) {
-			return ret;
-		}
-
-		ret = clock_control_get_rate(clk,
-				(clock_control_subsys_t *) &config->bus_clk,
-				&data->clk_rate);
-		if (ret < 0) {
-			return ret;
-		}
+	ret = clock_control_get_rate(config->clock_dev,
+			     (clock_control_subsys_t *) &config->bus_clk,
+			     &data->clk_rate);
+	if (ret < 0) {
+		return ret;
 	}
 
 	return uart_rcar_configure(dev, &data->current_config);
@@ -285,7 +276,7 @@ static const struct uart_driver_api uart_rcar_driver_api = {
 	static const struct uart_rcar_cfg uart_rcar_cfg_##n = {		      \
 		.reg_addr = DT_INST_REG_ADDR(n),			      \
 		.reg_size = DT_INST_REG_SIZE(n),			      \
-		.clock_controller = DT_INST_CLOCKS_LABEL(n),		      \
+		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),	      \
 		.mod_clk.module =					      \
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),	      \
 		.mod_clk.domain =					      \

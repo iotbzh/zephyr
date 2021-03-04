@@ -26,7 +26,7 @@ struct can_rcar_cfg {
 	uint32_t reg_addr;
 	int reg_size;
 	init_func_t init_func;
-	char *clock_controller;
+	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 	struct rcar_cpg_clk bus_clk;
 	uint32_t bus_speed;
@@ -800,7 +800,6 @@ static int can_rcar_init(const struct device *dev)
 {
 	const struct can_rcar_cfg *config = DEV_CAN_CFG(dev);
 	struct can_rcar_data *data = DEV_CAN_DATA(dev);
-	const struct device *clk;
 	struct can_timing timing;
 	int ret;
 	uint16_t ctlr;
@@ -814,30 +813,23 @@ static int can_rcar_init(const struct device *dev)
 	memset(data->rx_callback, 0, sizeof(data->rx_callback));
 	data->state = CAN_ERROR_ACTIVE;
 
-	if (config->clock_controller) {
-		clk = device_get_binding(config->clock_controller);
-		if (!clk) {
-			return -ENODEV;
-		}
-
-		/* reset the registers */
-		ret = clock_control_off(clk,
+	/* reset the registers */
+	ret = clock_control_off(config->clock_dev,
 				(clock_control_subsys_t *) &config->mod_clk);
-		if (ret < 0) {
-			return ret;
-		}
+	if (ret < 0) {
+		return ret;
+	}
 
-		ret = clock_control_on(clk,
-				(clock_control_subsys_t *) &config->mod_clk);
-		if (ret < 0) {
-			return ret;
-		}
+	ret = clock_control_on(config->clock_dev,
+			       (clock_control_subsys_t *) &config->mod_clk);
+	if (ret < 0) {
+		return ret;
+	}
 
-		ret = clock_control_on(clk,
-				(clock_control_subsys_t *) &config->bus_clk);
-		if (ret < 0) {
-			return ret;
-		}
+	ret = clock_control_on(config->clock_dev,
+			       (clock_control_subsys_t *) &config->bus_clk);
+	if (ret < 0) {
+		return ret;
 	}
 
 	ret = can_rcar_enter_reset_mode(config, false);
@@ -979,7 +971,7 @@ static const struct can_driver_api can_rcar_driver_api = {
 		.reg_addr = DT_INST_REG_ADDR(n),				\
 		.reg_size = DT_INST_REG_SIZE(n),				\
 		.init_func = can_rcar_##n##_init,				\
-		.clock_controller = DT_INST_CLOCKS_LABEL(n),			\
+		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),		\
 		.mod_clk.module =						\
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),		\
 		.mod_clk.domain =						\

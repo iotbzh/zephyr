@@ -27,18 +27,18 @@ struct uart_rcar_data {
 };
 
 /* Registers */
-#define SCSMR   0x00    /* Serial Mode Register */
-#define SCBRR   0x04    /* Bit Rate Register */
-#define SCSCR   0x08    /* Serial Control Register */
-#define SCFTDR  0x0c    /* Transmit FIFO Data Register */
-#define SCFSR   0x10    /* Serial Status Register */
-#define SCFRDR  0x14    /* Receive FIFO Data Register */
-#define SCFCR   0x18    /* FIFO Control Register */
-#define SCFDR   0x1c    /* FIFO Data Count Register */
-#define SCSPTR  0x20    /* Serial Port Register */
-#define SCLSR   0x24    /* Line Status Register */
-#define DL      0x30    /* Frequency Division Register */
-#define CKS     0x34    /* Clock Select Register */
+#define SCSMR           0x00    /* Serial Mode Register */
+#define SCBRR           0x04    /* Bit Rate Register */
+#define SCSCR           0x08    /* Serial Control Register */
+#define SCFTDR          0x0c    /* Transmit FIFO Data Register */
+#define SCFSR           0x10    /* Serial Status Register */
+#define SCFRDR          0x14    /* Receive FIFO Data Register */
+#define SCFCR           0x18    /* FIFO Control Register */
+#define SCFDR           0x1c    /* FIFO Data Count Register */
+#define SCSPTR          0x20    /* Serial Port Register */
+#define SCLSR           0x24    /* Line Status Register */
+#define DL              0x30    /* Frequency Division Register */
+#define CKS             0x34    /* Clock Select Register */
 
 /* SCSMR (Serial Mode Register) */
 #define SCSMR_C_A       BIT(7)  /* Communication Mode */
@@ -125,9 +125,6 @@ static void uart_rcar_set_baudrate(const struct device *dev,
 
 	reg_val = ((data->clk_rate + 16 * baud_rate) / (32 * baud_rate) - 1);
 	uart_rcar_write_8(config, SCBRR, reg_val);
-
-	for (int i = 0; i < 100; i++) {
-	}
 }
 
 static int uart_rcar_poll_in(const struct device *dev, unsigned char *p_char)

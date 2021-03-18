@@ -21,7 +21,7 @@ LOG_MODULE_REGISTER(i2c_rcar);
 
 struct i2c_rcar_cfg {
 	uint32_t reg_addr;
-	char *clock_controller;
+	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 	struct rcar_cpg_clk bus_clk;
 	uint32_t bitrate;
@@ -294,29 +294,22 @@ static int i2c_rcar_init(const struct device *dev)
 {
 	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
 	struct i2c_rcar_data *data = DEV_I2C_DATA(dev);
-	const struct device *clk;
 	uint32_t bitrate_cfg;
 	int ret;
 
-	if (config->clock_controller) {
-		clk = device_get_binding(config->clock_controller);
-		if (!clk) return -ENODEV;
+	ret = clock_control_on(config->clock_dev,
+			(clock_control_subsys_t *) &config->mod_clk);
 
+	if (ret < 0) {
+		return ret;
+	}
 
-		ret = clock_control_on(clk,
-				(clock_control_subsys_t *) &config->mod_clk);
+	ret = clock_control_get_rate(config->clock_dev,
+			(clock_control_subsys_t *) &config->bus_clk,
+			&data->clk_rate);
 
-		if (ret < 0) {
-			return ret;
-		}
-
-		ret = clock_control_get_rate(clk,
-				(clock_control_subsys_t *) &config->bus_clk,
-				&data->clk_rate);
-
-		if (ret < 0) {
-			return ret;
-		}
+	if (ret < 0) {
+		return ret;
 	}
 
 	bitrate_cfg = i2c_map_dt_bitrate(config->bitrate);
@@ -333,7 +326,7 @@ static const struct i2c_driver_api i2c_rcar_driver_api = {
 #define I2C_RCAR_INIT(n)						      \
 	static const struct i2c_rcar_cfg i2c_rcar_cfg_##n = {		      \
 		.reg_addr = DT_INST_REG_ADDR(n),			      \
-		.clock_controller = DT_INST_CLOCKS_LABEL(n),		      \
+		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),           \
 		.bitrate = DT_INST_PROP(n, clock_frequency),                  \
 		.mod_clk.module =					      \
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),	      \

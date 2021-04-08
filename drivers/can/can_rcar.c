@@ -617,7 +617,7 @@ static void can_rcar_set_bittiming(const struct can_rcar_cfg *config,
 {
 	uint32_t bcr;
 
-	bcr = RCAR_CAN_BCR_TSEG1(timing->phase_seg1 - 1) |
+	bcr = RCAR_CAN_BCR_TSEG1(timing->phase_seg1 + timing->prop_seg - 1) |
 	      RCAR_CAN_BCR_BPR(timing->prescaler - 1) |
 	      RCAR_CAN_BCR_SJW(timing->sjw - 1) |
 	      RCAR_CAN_BCR_TSEG2(timing->phase_seg2 - 1);

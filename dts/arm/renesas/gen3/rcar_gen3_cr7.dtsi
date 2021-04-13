@@ -73,7 +73,7 @@
 		};
 
 		cmt0: timer@e60f0500 {
-			compatible = "rcar,cmt";
+			compatible = "renesas,rcar-cmt";
 			interrupt-parent = <&gic>;
 			interrupts = <GIC_SPI 142 IRQ_TYPE_LEVEL
 					IRQ_DEFAULT_PRIORITY>,

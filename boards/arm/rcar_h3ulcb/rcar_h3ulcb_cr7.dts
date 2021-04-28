@@ -14,6 +14,16 @@
 
 	chosen {
 		zephyr,sram = &sram0;
+		zephyr,ipc_shm = &sram_shm;
+		zephyr,ipc = &mfis;
+		zephyr,can-primary = &can0;
+		zephyr,console = &scif1;
+		zephyr,shell-uart = &scif1;
+	};
+
+	sram_shm: memory@42000000 {
+		compatible = "mmio-sram";
+		reg = <0x42000000 0x400000>;
 	};
 
 	leds {
@@ -38,11 +48,31 @@
 	};
 };
 
+&pfc {
+	status = "okay";
+};
+
 &cmt0 {
 	status = "okay";
 	clock-frequency = <32000>;
 };
 
 &gpio6 {
+	status = "okay";
+};
+
+&mfis {
+	status = "okay";
+};
+
+&scif1 {
+	status = "okay";
+};
+
+&i2c2 {
+	status = "okay";
+};
+
+&can0 {
 	status = "okay";
 };

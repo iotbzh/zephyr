@@ -17,6 +17,8 @@
 		zephyr,ipc_shm = &sram_shm;
 		zephyr,ipc = &mfis;
 		zephyr,can-primary = &can0;
+		zephyr,console = &scif2;
+		zephyr,shell-uart = &scif2;
 	};
 
 	sram_shm: memory@42000000 {
@@ -84,5 +86,5 @@
 	/* When enabling scif2, make sure it's not in use
 	 * by another component: u-boot, linux ..
 	 */
-	status = "disabled";
+	status = "okay";
 };

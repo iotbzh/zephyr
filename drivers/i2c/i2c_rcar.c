@@ -23,12 +23,7 @@ struct i2c_rcar_cfg {
 	uint32_t reg_addr;
 	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
-	struct rcar_cpg_clk bus_clk;
 	uint32_t bitrate;
-};
-
-struct i2c_rcar_data {
-	uint32_t clk_rate;
 };
 
 /* Registers */
@@ -71,8 +66,6 @@ struct i2c_rcar_data {
 /* Helper macros for I2C */
 #define DEV_I2C_CFG(dev) \
 	((const struct i2c_rcar_cfg *)(dev)->config)
-#define DEV_I2C_DATA(dev) \
-	((struct i2c_rcar_data *)(dev)->data)
 
 static uint32_t i2c_rcar_read(const struct i2c_rcar_cfg *config,
 				  uint32_t offs)
@@ -293,20 +286,11 @@ static int i2c_rcar_configure(const struct device *dev, uint32_t dev_config)
 static int i2c_rcar_init(const struct device *dev)
 {
 	const struct i2c_rcar_cfg *config = DEV_I2C_CFG(dev);
-	struct i2c_rcar_data *data = DEV_I2C_DATA(dev);
 	uint32_t bitrate_cfg;
 	int ret;
 
 	ret = clock_control_on(config->clock_dev,
 			(clock_control_subsys_t *) &config->mod_clk);
-
-	if (ret < 0) {
-		return ret;
-	}
-
-	ret = clock_control_get_rate(config->clock_dev,
-			(clock_control_subsys_t *) &config->bus_clk,
-			&data->clk_rate);
 
 	if (ret < 0) {
 		return ret;
@@ -332,18 +316,13 @@ static const struct i2c_driver_api i2c_rcar_driver_api = {
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),	      \
 		.mod_clk.domain =					      \
 			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain),	      \
-		.bus_clk.module =					      \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module),	      \
-		.bus_clk.domain =					      \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain),	      \
 	};								      \
 									      \
-	static struct i2c_rcar_data i2c_rcar_data_##n;		              \
 								              \
 	DEVICE_DT_INST_DEFINE(n,					      \
 			    i2c_rcar_init,				      \
 			    device_pm_control_nop,			      \
-			    &i2c_rcar_data_##n,			              \
+			    NULL,			              \
 			    &i2c_rcar_cfg_##n,				      \
 			    POST_KERNEL, CONFIG_KERNEL_INIT_PRIORITY_DEVICE,  \
 			    &i2c_rcar_driver_api			      \

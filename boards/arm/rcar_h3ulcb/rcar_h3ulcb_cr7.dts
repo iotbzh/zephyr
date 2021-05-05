@@ -14,6 +14,7 @@
 
 	chosen {
 		zephyr,sram = &sram0;
+		zephyr,can-primary = &can0;
 	};
 
 	leds {
@@ -44,5 +45,9 @@
 };
 
 &gpio6 {
+	status = "okay";
+};
+
+&can0 {
 	status = "okay";
 };

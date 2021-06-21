@@ -77,6 +77,7 @@
 };
 
 &can0 {
+	pinctrl-0 = <&can0_data_tx &can0_data_rx>;
 	status = "okay";
 };
 
@@ -84,5 +85,6 @@
 	/* When enabling scif2, make sure it's not in use
 	 * by another component: u-boot, linux ..
 	 */
+	pinctrl-0 = <&scif2_data_a_tx &scif2_data_a_rx>;
 	status = "disabled";
 };

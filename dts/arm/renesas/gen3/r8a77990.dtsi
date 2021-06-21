@@ -5,3 +5,26 @@
  */
 
 #include <renesas/gen3/rcar_gen3_cr7.dtsi>
+#include <dt-bindings/pinctrl/rcar-pinctrl.h>
+
+&pfc {
+	can0_data_tx: can0_data_tx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(7,1,3)
+					RCAR_PINMUX_GPSR(0,12,1) >;
+	};
+
+	can0_data_rx: can0_data_rx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(7,2,3)
+					RCAR_PINMUX_GPSR(0,13,1) >;
+	};
+
+	scif2_data_a_tx: scif2_data_a_tx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(12,2,0)
+					RCAR_PINMUX_GPSR(5,8,1) >;
+	};
+
+	scif2_data_a_rx: scif2_data_a_rx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(12,3,0)
+					RCAR_PINMUX_GPSR(5,9,1) >;
+	};
+};

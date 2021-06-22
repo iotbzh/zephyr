@@ -298,12 +298,12 @@ static int uart_rcar_fifo_fill(const struct device *dev,
 		/* Send current byte */
 		uart_rcar_write_8(config, SCFTDR, tx_data[num_tx]);
 
+		reg_val = uart_rcar_read_16(config, SCFSR);
+		reg_val &= ~(SCFSR_TDFE | SCFSR_TEND);
+		uart_rcar_write_16(config, SCFSR, reg_val);
+
 		num_tx++;
 	}
-
-	reg_val = uart_rcar_read_16(config, SCFSR);
-	reg_val &= ~(SCFSR_TDFE | SCFSR_TEND);
-	uart_rcar_write_16(config, SCFSR, reg_val);
 
 	return num_tx;
 }
@@ -319,11 +319,11 @@ static int uart_rcar_fifo_read(const struct device *dev, uint8_t *rx_data,
 	       (uart_rcar_read_16(config, SCFSR) & SCFSR_RDF)) {
 		/* Receive current byte */
 		rx_data[num_rx++] = uart_rcar_read_16(config, SCFRDR);
-	}
 
-	reg_val = uart_rcar_read_16(config, SCFSR);
-	reg_val &= ~(SCFSR_RDF);
-	uart_rcar_write_16(config, SCFSR, reg_val);
+		reg_val = uart_rcar_read_16(config, SCFSR);
+		reg_val &= ~(SCFSR_RDF);
+		uart_rcar_write_16(config, SCFSR, reg_val);
+	}
 
 	return num_rx;
 }

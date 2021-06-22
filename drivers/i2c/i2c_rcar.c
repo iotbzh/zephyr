@@ -210,11 +210,6 @@ static int i2c_rcar_transfer_msg(const struct device *dev, struct i2c_msg *msg)
 		}
 	}
 
-	/* Finish the transfer */
-	if ((msg->flags & I2C_MSG_STOP) == I2C_MSG_STOP) {
-		ret = i2c_rcar_finish(dev);
-	}
-
 	return ret;
 }
 
@@ -253,6 +248,14 @@ static int i2c_rcar_transfer(const struct device *dev,
 		/* Transfer data */
 		if (msgs->len) {
 			ret = i2c_rcar_transfer_msg(dev, msgs);
+			if (ret != 0) {
+				return ret;
+			}
+		}
+
+		/* Finish the transfer */
+		if ((msgs->flags & I2C_MSG_STOP) == I2C_MSG_STOP) {
+			ret = i2c_rcar_finish(dev);
 			if (ret != 0) {
 				return ret;
 			}

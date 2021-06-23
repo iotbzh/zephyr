@@ -183,16 +183,6 @@ static int uart_rcar_configure(const struct device *dev,
 		return -ENOTSUP;
 	}
 
-	/* Disable Transmit and Receive */
-	reg_val = uart_rcar_read_16(config, SCSCR);
-	reg_val &= ~(SCSCR_TE | SCSCR_RE);
-	uart_rcar_write_16(config, SCSCR, reg_val);
-
-	/* Emptying Transmit and Receive FIFO */
-	reg_val = uart_rcar_read_16(config, SCFCR);
-	reg_val |= (SCFCR_TFRST | SCFCR_RFRST);
-	uart_rcar_write_16(config, SCFCR, reg_val);
-
 	/* Resetting Errors Registers */
 	reg_val = uart_rcar_read_16(config, SCFSR);
 	reg_val &= ~(SCFSR_ER | SCFSR_DR | SCFSR_BRK | SCFSR_RDF);
@@ -222,9 +212,8 @@ static int uart_rcar_configure(const struct device *dev,
 		     SCFCR_MCE | SCFCR_TFRST | SCFCR_RFRST);
 	uart_rcar_write_16(config, SCFCR, reg_val);
 
-	/* Enable Transmit & Receive + disable Interrupts */
+	/* Disable Interrupts */
 	reg_val = uart_rcar_read_16(config, SCSCR);
-	reg_val |= (SCSCR_TE | SCSCR_RE);
 	reg_val &= ~(SCSCR_TIE | SCSCR_RIE | SCSCR_TEIE | SCSCR_REIE |
 		     SCSCR_TOIE);
 	uart_rcar_write_16(config, SCSCR, reg_val);
@@ -249,6 +238,7 @@ static int uart_rcar_init(const struct device *dev)
 	const struct uart_rcar_cfg *config = DEV_UART_CFG(dev);
 	struct uart_rcar_data *data = DEV_UART_DATA(dev);
 	int ret;
+	uint16_t reg_val;
 
 	ret = clock_control_on(config->clock_dev,
 			       (clock_control_subsys_t *)&config->mod_clk);
@@ -263,7 +253,23 @@ static int uart_rcar_init(const struct device *dev)
 		return ret;
 	}
 
+	/* Disable Transmit and Receive */
+	reg_val = uart_rcar_read_16(config, SCSCR);
+	reg_val &= ~(SCSCR_TE | SCSCR_RE);
+	uart_rcar_write_16(config, SCSCR, reg_val);
+
+	/* Emptying Transmit and Receive FIFO */
+	reg_val = uart_rcar_read_16(config, SCFCR);
+	reg_val |= (SCFCR_TFRST | SCFCR_RFRST);
+	uart_rcar_write_16(config, SCFCR, reg_val);
+
 	ret = uart_rcar_configure(dev, &data->current_config);
+
+	/* Enable Transmit and Receive */
+	reg_val = uart_rcar_read_16(config, SCSCR);
+	reg_val |= (SCSCR_TE | SCSCR_RE);
+	uart_rcar_write_16(config, SCSCR, reg_val);
+
 	if (ret != 0) {
 		return ret;
 	}

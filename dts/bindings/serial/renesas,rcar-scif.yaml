@@ -13,3 +13,13 @@ properties:
 
     clocks:
       required: true
+
+    pinctrl-0:
+      type: phandles
+      required: false
+      description: |
+        Pinmux configuration for RX & TX signals.  We expect that
+        the phandles will reference pinctrl nodes.
+
+        For example the UART on r8a77951 would be
+           pinctrl-0 = <&scif2_data_a_tx &scif2_data_a_rx>;

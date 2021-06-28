@@ -4,3 +4,5 @@
 zephyr_sources(
   soc.c
 )
+
+zephyr_library_sources_ifdef(CONFIG_PINMUX_RCAR pinmux_rcar.c)

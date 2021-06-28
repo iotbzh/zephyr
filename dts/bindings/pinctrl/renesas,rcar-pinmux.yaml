@@ -10,3 +10,11 @@ include: base.yaml
 properties:
     reg:
       required: true
+
+child-binding:
+  description: |
+     This binding gives a base representation of the R-Car pins configration
+  properties:
+    renesas,rcar-pins:
+      type: array
+      required: true

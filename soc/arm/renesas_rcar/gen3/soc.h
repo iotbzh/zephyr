@@ -15,10 +15,8 @@
 #define __GIC_PRESENT 0
 #define __TIM_PRESENT 0
 
-#if defined(CONFIG_SOC_R8A77951)
-#include "pfc-r8a77951.h"
-#elif defined(CONFIG_SOC_R8A77990)
-#include "pfc-r8a77990.h"
+#if defined(CONFIG_PINMUX_RCAR)
+#include "pfc-rcar.h"
 #endif
 
 #endif /* _SOC__H_ */

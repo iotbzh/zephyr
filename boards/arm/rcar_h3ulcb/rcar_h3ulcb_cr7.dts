@@ -58,11 +58,21 @@
 };
 
 &can0 {
+	pinctrl-0 = <&can0_data_a_tx &can0_data_a_rx>;
 	status = "okay";
 };
 
 &scif1 {
+	pinctrl-0 = <&scif1_data_a_tx &scif1_data_a_rx>;
 	status = "okay";
+};
+
+&scif2 {
+	/* When enabling scif2, make sure it's not in use
+	 * by another component: u-boot, linux ..
+	 */
+	pinctrl-0 = <&scif2_data_a_tx &scif2_data_a_rx>;
+	status = "disabled";
 };
 
 &i2c2 {

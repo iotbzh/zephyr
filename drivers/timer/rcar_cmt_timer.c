@@ -52,6 +52,24 @@ BUILD_ASSERT(CYCLES_PER_TICK > 1,
 #define CSR_OVERFLOW_FLAG               BIT(14)
 #define CSR_MATCH_FLAG                  BIT(15)
 
+uint32_t cmt_get_count(uint32_t cnt_chan)
+{
+	uint32_t cnt, cnt_saved;
+
+	/*
+	 * When CMCNTn is read during the counter operation, the read value may
+	 * be wrong. Read this register continuously, until same values are read
+	 * from this register.
+	 */
+	cnt = sys_read32(TIMER_BASE_ADDR + cnt_chan);
+	do {
+		cnt_saved = cnt;
+		cnt = sys_read32(TIMER_BASE_ADDR + cnt_chan);
+	} while (cnt != cnt_saved);
+
+	return cnt;
+}
+
 static void cmt_isr(void *arg)
 {
 	ARG_UNUSED(arg);
@@ -148,5 +166,5 @@ uint32_t sys_clock_elapsed(void)
 
 uint32_t sys_clock_cycle_get_32(void)
 {
-	return sys_read32(TIMER_BASE_ADDR + CMCNT1_OFFSET);
+	return cmt_get_count(CMCNT1_OFFSET);
 }

@@ -20,6 +20,12 @@
 #define CYCLES_PER_SEC         TIMER_CLOCK_FREQUENCY
 #define CYCLES_PER_TICK        (CYCLES_PER_SEC / CONFIG_SYS_CLOCK_TICKS_PER_SEC)
 
+/* CYCLES_NEXT_MIN must be large enough to ensure that the timer does not miss
+ * interrupts.  This value was conservatively set using the trial and error
+ * method, and there is room for improvement.
+ */
+#define CYCLES_NEXT_MIN		(30)
+#define CYCLES_NEXT_MAX		(0xffffffff)
 static struct rcar_cpg_clk mod_clk = {
 	.module = DT_INST_CLOCKS_CELL(0, module),
 	.domain = DT_INST_CLOCKS_CELL(0, domain),
@@ -52,6 +58,10 @@ BUILD_ASSERT(CYCLES_PER_TICK > 1,
 #define CSR_OVERFLOW_FLAG               BIT(14)
 #define CSR_MATCH_FLAG                  BIT(15)
 
+#ifdef CONFIG_TICKLESS_KERNEL
+static uint32_t last_cycles;
+#endif
+
 uint32_t cmt_get_count(uint32_t cnt_chan)
 {
 	uint32_t cnt, cnt_saved;
@@ -74,14 +84,53 @@ static void cmt_isr(void *arg)
 {
 	ARG_UNUSED(arg);
 	uint32_t reg_val;
+	uint32_t ticks;
 
 	/* clear the interrupt */
 	reg_val = sys_read32(TIMER_BASE_ADDR + CMCSR0_OFFSET);
 	reg_val &= ~CSR_MATCH_FLAG;
 	sys_write32(reg_val, TIMER_BASE_ADDR + CMCSR0_OFFSET);
 
+#ifdef CONFIG_TICKLESS_KERNEL
+	/* Read counter value */
+	reg_val = cmt_get_count(CMCNT1_OFFSET);
+
+	/* Calculate the number of ticks since last announcement  */
+	ticks = (reg_val - last_cycles) / CYCLES_PER_TICK;
+	last_cycles = reg_val;
+#else
+	ticks = 1;
+#endif
 	/* Announce to the kernel */
-	sys_clock_announce(1);
+	sys_clock_announce(ticks);
+}
+
+void sys_clock_set_timeout(int32_t ticks, bool idle)
+{
+#ifdef CONFIG_TICKLESS_KERNEL
+	uint32_t cycles;
+	uint32_t next_cycles;
+	uint32_t delta;
+
+	/* Read counter value */
+	cycles = cmt_get_count(CMCNT0_OFFSET);
+
+	/* Calculate timeout counter value */
+	if (ticks == K_TICKS_FOREVER) {
+		next_cycles = cycles + CYCLES_NEXT_MAX;
+	} else {
+		next_cycles = cycles + ((uint32_t)ticks * CYCLES_PER_TICK);
+	}
+
+	delta = next_cycles - cycles;
+
+	/* Ensure that the match value meets the minimum timing requirements */
+	if (delta < CYCLES_NEXT_MIN) {
+		next_cycles += CYCLES_NEXT_MIN - delta;
+	}
+
+	sys_write32(next_cycles, TIMER_BASE_ADDR + CMCOR0_OFFSET);
+#endif
 }
 
 /*
@@ -127,11 +176,16 @@ int sys_clock_driver_init(const struct device *device)
 	sys_write32(CSR_FREE_RUN | CSR_CLK_DIV_1,
 		    TIMER_BASE_ADDR + CMCSR1_OFFSET);
 
+#ifdef CONFIG_TICKLESS_KERNEL
+	/* Set the first channel match to max uint32 */
+	sys_write32(CYCLES_NEXT_MAX, TIMER_BASE_ADDR + CMCOR1_OFFSET);
+#else
 	/* Set the first channel match to CYCLES Per tick*/
 	sys_write32(CYCLES_PER_TICK, TIMER_BASE_ADDR + CMCOR0_OFFSET);
+#endif
 
 	/* Set the second channel match to max uint32 */
-	sys_write32(0xffffffff, TIMER_BASE_ADDR + CMCOR1_OFFSET);
+	sys_write32(CYCLES_NEXT_MAX, TIMER_BASE_ADDR + CMCOR1_OFFSET);
 
 	/* Reset the counter for first channel, check WRFLG first */
 	while (sys_read32(TIMER_BASE_ADDR + CMCSR0_OFFSET) & CSR_WRITE_FLAG)
@@ -151,6 +205,11 @@ int sys_clock_driver_init(const struct device *device)
 	IRQ_CONNECT(TIMER_IRQ, 0, cmt_isr, 0, 0);
 	irq_enable(TIMER_IRQ);
 
+#ifdef CONFIG_TICKLESS_KERNEL
+	/* Get the cycles count of the second channel */
+	last_cycles = cmt_get_count(CMCNT1_OFFSET);
+#endif
+
 	/* Start the timers */
 	sys_write32(START_BIT, TIMER_BASE_ADDR + CMSTR0_OFFSET);
 	sys_write32(START_BIT, TIMER_BASE_ADDR + CMSTR1_OFFSET);
@@ -160,8 +219,18 @@ int sys_clock_driver_init(const struct device *device)
 
 uint32_t sys_clock_elapsed(void)
 {
+#ifdef CONFIG_TICKLESS_KERNEL
+	uint32_t cycles;
+
+	/* Read counter value */
+	cycles = cmt_get_count(CMCNT1_OFFSET);
+
+	/* Return the number of ticks since last announcement */
+	return (cycles - last_cycles) / CYCLES_PER_TICK;
+#else
 	/* Always return 0 for tickful operation */
 	return 0;
+#endif
 }
 
 uint32_t sys_clock_cycle_get_32(void)

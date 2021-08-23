@@ -124,6 +124,25 @@
 			label = "can0";
 		};
 
+		can1: can@e6c38000 {
+			compatible = "renesas,rcar-can";
+			reg = <0xe6c38000 0x1000>;
+			interrupt-parent = <&gic>;
+			interrupts = <GIC_SPI 187 IRQ_TYPE_LEVEL
+					IRQ_DEFAULT_PRIORITY>;
+			clocks = <&cpg CPG_MOD 915>,
+				<&cpg CPG_CORE CPG_CORE_CLK_CANFD>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+			bus-speed = <125000>;
+			sjw = <1>;
+			prop-seg = <8>;
+			phase-seg1 = <8>;
+			phase-seg2 = <3>;
+			status = "disabled";
+			label = "can1";
+		};
+
 		i2c2: i2c@e6510000 {
 			compatible = "renesas,rcar-i2c";
 			clock-frequency = <I2C_BITRATE_STANDARD>;

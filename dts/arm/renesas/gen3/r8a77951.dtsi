@@ -18,6 +18,16 @@
 					RCAR_PINMUX_GPSR(1,24,1) >;
 	};
 
+	can1_data_tx: can1_data_tx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(4,5,8)
+					RCAR_PINMUX_GPSR(1,22,1) >;
+	};
+
+	can1_data_rx: can1_data_rx {
+		renesas,rcar-pins = < RCAR_PINMUX_IPSR(5,1,8)
+					RCAR_PINMUX_GPSR(1,26,1) >;
+	};
+
 	scif1_data_a_tx: scif1_data_a_tx {
 		renesas,rcar-pins = < RCAR_PINMUX_IPSR(12,4,0)
 					RCAR_PINMUX_GPSR(5,6,1) >;

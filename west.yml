@@ -21,6 +21,8 @@ manifest:
   remotes:
     - name: upstream
       url-base: https://github.com/zephyrproject-rtos
+    - name: iotbzh
+      url-base: https://github.com/iotbzh
 
   #
   # Please add items below based on alphabetical order
@@ -134,7 +136,8 @@ manifest:
       groups:
         - hal
     - name: libmetal
-      revision: 39d049d4ae68e6f6d595fce7de1dcfc1024fb4eb
+      remote: iotbzh
+      revision: a51bd8c022a4ca92ced3c01c49c301675639914a
       path: modules/hal/libmetal
       groups:
         - hal

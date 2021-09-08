@@ -127,6 +127,11 @@ config IPM_STM32_HSEM_CPU
 	help
 	  use to define the CPU ID used by HSEM
 
+config IPM_RCAR
+	bool "Renesas RCAR IPM driver"
+	help
+	  Renesas RCAR IPM driver
+
 module = IPM
 module-str = ipm
 source "subsys/logging/Kconfig.template.log_config"

@@ -13,3 +13,11 @@ properties:
 
     clocks:
       required: true
+
+    pinctrl-0:
+      type: phandles
+      required: false
+      description: |
+        GPIO pin configuration for SCIF RX and TX. The phandles are
+        expected to reference pinctrl nodes, e.g.
+          pinctrl-0 = <&scif1_data_a_tx &scif1_data_a_rx>;

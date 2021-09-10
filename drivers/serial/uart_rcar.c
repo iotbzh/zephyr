@@ -19,6 +19,8 @@ struct uart_rcar_cfg {
 	const struct device *clock_dev;
 	struct rcar_cpg_clk mod_clk;
 	struct rcar_cpg_clk bus_clk;
+	const struct rcar_pin *pin_list;
+	uint8_t pin_list_size;
 #ifdef CONFIG_UART_INTERRUPT_DRIVEN
 	void (*irq_config_func)(const struct device *dev);
 #endif
@@ -270,6 +272,8 @@ static int uart_rcar_init(const struct device *dev)
 	const struct uart_rcar_cfg *config = DEV_UART_CFG(dev);
 	struct uart_rcar_data *data = DEV_UART_DATA(dev);
 	int ret;
+
+	pinmux_rcar_set_pingroup(config->pin_list, config->pin_list_size);
 
 	ret = clock_control_on(config->clock_dev,
 			       (clock_control_subsys_t *)&config->mod_clk);
@@ -528,19 +532,22 @@ static const struct uart_driver_api uart_rcar_driver_api = {
 };
 
 /* Device Instantiation */
-#define UART_RCAR_DECLARE_CFG(n, IRQ_FUNC_INIT)			    \
-	static const struct uart_rcar_cfg uart_rcar_cfg_##n = {	    \
-		.reg_addr = DT_INST_REG_ADDR(n),		    \
-		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)), \
-		.mod_clk.module =				    \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),   \
-		.mod_clk.domain =				    \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain),   \
-		.bus_clk.module =				    \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module),   \
-		.bus_clk.domain =				    \
-			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain),   \
-		IRQ_FUNC_INIT					    \
+#define UART_RCAR_DECLARE_CFG(n, IRQ_FUNC_INIT)			     \
+	static const struct rcar_pin pins_scif##n[] = RCAR_DT_INST_PINS(n);  \
+	static const struct uart_rcar_cfg uart_rcar_cfg_##n = {	             \
+		.reg_addr = DT_INST_REG_ADDR(n),		             \
+		.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),          \
+		.mod_clk.module =				             \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, module),            \
+		.mod_clk.domain =				             \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 0, domain),            \
+		.bus_clk.module =				             \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, module),            \
+		.bus_clk.domain =				             \
+			DT_INST_CLOCKS_CELL_BY_IDX(n, 1, domain),            \
+		.pin_list = pins_scif##n,                                    \
+		.pin_list_size = ARRAY_SIZE(pins_scif##n),	 	     \
+		IRQ_FUNC_INIT					             \
 	}
 
 #ifdef CONFIG_UART_INTERRUPT_DRIVEN

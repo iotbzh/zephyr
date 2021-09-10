@@ -68,6 +68,7 @@
 };
 
 &scif1 {
+	pinctrl-0 = <&scif1_data_a_tx &scif1_data_a_rx>;
 	status = "okay";
 };
 

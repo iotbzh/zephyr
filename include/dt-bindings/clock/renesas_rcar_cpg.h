@@ -13,4 +13,6 @@
 #define CPG_CORE_CLK_CANFD              0       /* CANFD clock */
 #define CPG_CORE_CLK_S3D4               1       /* S3D4 Clock */
 
+/* Falcon */
+#define CPG_CORE_CLK_S1D8               42      /* SCIF clock */
 #endif /* ZEPHYR_INCLUDE_DT_BINDINGS_CLOCK_RENESAS_RCAR_CPG_MSSR_H_ */

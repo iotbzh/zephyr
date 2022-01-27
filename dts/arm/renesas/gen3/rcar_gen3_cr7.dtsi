@@ -10,6 +10,7 @@
 #include <dt-bindings/clock/renesas_rcar_cpg.h>
 #include <dt-bindings/gpio/gpio.h>
 #include <dt-bindings/i2c/i2c.h>
+#include <dt-bindings/pwm/pwm.h>
 
 / {
 	cpus {
@@ -68,6 +69,76 @@
 		pfc: pin-controller@e6060000 {
 			compatible = "renesas,rcar-pfc";
 			reg = <0xe6060000 0x50c>;
+		};
+
+		pwm0: pwm@e6e30000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e30000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm0";
+		};
+
+		pwm1: pwm@e6e31000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e31000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm1";
+		};
+
+		pwm2: pwm@e6e32000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e32000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm2";
+		};
+
+		pwm3: pwm@e6e33000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e33000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm3";
+		};
+
+		pwm4: pwm@e6e34000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e34000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm4";
+		};
+
+		pwm5: pwm@e6e35000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e35000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm5";
+		};
+
+		pwm6: pwm@e6e36000 {
+			compatible = "renesas,rcar-pwm";
+			reg = <0xe6e36000 0x8>;
+			#pwm-cells = <2>;
+			clocks = <&cpg CPG_MOD 523>,
+				<&cpg CPG_CORE CPG_CORE_CLK_S0D12>;
+			status = "disabled";
+			label = "pwm6";
 		};
 
 		cmt0: timer@e60f0500 {

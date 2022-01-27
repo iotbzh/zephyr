@@ -1,0 +1,13 @@
+# Reneas R-Car PWM configuration options
+
+# Copyright (c) 2022 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+DT_COMPAT_RENESAS_RCAR_PWM := renesas,rcar-pwm
+
+config PWM_RCAR
+	bool "Renesas R-Car PWM Driver"
+	default $(dt_compat_enabled,$(DT_COMPAT_RENESAS_RCAR_PWM))
+	depends on SOC_FAMILY_RCAR
+	help
+	  Enable Renesas R-Car PWM Driver.

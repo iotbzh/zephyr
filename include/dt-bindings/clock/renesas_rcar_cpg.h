@@ -12,5 +12,6 @@
 
 #define CPG_CORE_CLK_CANFD              0       /* CANFD clock */
 #define CPG_CORE_CLK_S3D4               1       /* S3D4 Clock */
+#define CPG_CORE_CLK_S0D12              2       /* S0D12 Clock */
 
 #endif /* ZEPHYR_INCLUDE_DT_BINDINGS_CLOCK_RENESAS_RCAR_CPG_MSSR_H_ */

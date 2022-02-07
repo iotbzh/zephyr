@@ -51,6 +51,12 @@
 	status = "okay";
 };
 
+&pwm0 {
+	pinctrl-0 = <&pwm0_pin_out>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
 &can0 {
 	pinctrl-0 = <&can0_data_a_tx_default &can0_data_a_rx_default>;
 	pinctrl-names = "default";

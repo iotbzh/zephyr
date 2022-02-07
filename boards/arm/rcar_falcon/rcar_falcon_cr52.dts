@@ -7,6 +7,7 @@
 
 /dts-v1/;
 #include <arm/renesas/gen4/r8a779a0.dtsi>
+#include "rcar_falcon_cr52-pinctrl.dtsi"
 
 / {
 	model = "Renesas Falcon board";
@@ -40,10 +41,14 @@
 };
 
 &scif0 {
+	pinctrl-0 = <&scif0_data_tx_default &scif0_data_rx_default>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 
 &scif4 {
+	pinctrl-0 = <&scif4_data_tx_default &scif4_data_rx_default>;
+	pinctrl-names = "default";
 	status = "okay";
 };
 

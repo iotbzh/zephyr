@@ -8,34 +8,6 @@
 
 #include "pinctrl-rcar-common.h"
 
-/* Renesas Gen4 has IPSR registers at different base address
- * reg is here an index for the base address.
- * Each base address has 4 IPSR banks.
- */
-#define IPnSR(bank, reg, shift, func) \
-	IPSR(((reg) << 4U) | (bank), shift, func)
-
-#define IP0SR1(shift, func) IPnSR(0, 1, shift, func)
-#define IP1SR1(shift, func) IPnSR(1, 1, shift, func)
-#define IP2SR1(shift, func) IPnSR(2, 1, shift, func)
-#define IP3SR1(shift, func) IPnSR(3, 1, shift, func)
-#define IP0SR2(shift, func) IPnSR(0, 2, shift, func)
-#define IP1SR2(shift, func) IPnSR(1, 2, shift, func)
-#define IP2SR2(shift, func) IPnSR(2, 2, shift, func)
-#define IP3SR2(shift, func) IPnSR(3, 2, shift, func)
-#define IP0SR3(shift, func) IPnSR(0, 3, shift, func)
-#define IP1SR3(shift, func) IPnSR(1, 3, shift, func)
-#define IP2SR3(shift, func) IPnSR(2, 3, shift, func)
-#define IP3SR3(shift, func) IPnSR(3, 3, shift, func)
-#define IP0SR4(shift, func) IPnSR(0, 4, shift, func)
-#define IP1SR4(shift, func) IPnSR(1, 4, shift, func)
-#define IP2SR4(shift, func) IPnSR(2, 4, shift, func)
-#define IP3SR4(shift, func) IPnSR(3, 4, shift, func)
-#define IP0SR5(shift, func) IPnSR(0, 5, shift, func)
-#define IP1SR5(shift, func) IPnSR(1, 5, shift, func)
-#define IP2SR5(shift, func) IPnSR(2, 5, shift, func)
-#define IP3SR5(shift, func) IPnSR(3, 5, shift, func)
-
 /* Pins declaration */
 #define PIN_NONE                   -1
 #define PIN_QSPI0_SPCLK            RCAR_GP_PIN(0, 0)

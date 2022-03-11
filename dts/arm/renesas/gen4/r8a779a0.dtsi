@@ -9,6 +9,15 @@
 
 / {
 	soc {
+		pfc: pin-controller@e6050000 {
+			compatible = "renesas,rcar-pfc";
+			reg = <0xe6050000 0x16c>, <0xe6050800 0x16c>,
+			      <0xe6058000 0x16c>, <0xe6058800 0x16c>,
+			      <0xe6060000 0x16c>, <0xe6060800 0x16c>,
+			      <0xe6068000 0x16c>, <0xe6068800 0x16c>,
+			      <0xe6069000 0x16c>, <0xe6069800 0x16c>;
+		};
+
 		gpio4: gpio@e6060180 {
 			compatible = "renesas,rcar-gpio";
 			reg = <0xe6060180 0x54>;

@@ -9,4 +9,7 @@ config SOC
 config NUM_IRQS
 	default 991
 
+config PINCTRL
+       default y
+
 endif # SOC_R8A779A0

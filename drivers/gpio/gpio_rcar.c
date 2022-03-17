@@ -47,6 +47,7 @@ struct gpio_rcar_data {
 #define FILONOFF 0x28   /* Chattering Prevention On/Off Register */
 #define OUTDTSEL 0x40   /* Output Data Select Register */
 #define BOTHEDGE 0x4c   /* One Edge/Both Edge Select Register */
+#define INEN     0x50	/* General Input Enable Register */
 
 static inline uint32_t gpio_rcar_read(const struct gpio_rcar_cfg *config,
 				      uint32_t offs)
@@ -103,6 +104,11 @@ static void gpio_rcar_config_general_input_output_mode(
 
 	/* Configure positive logic in POSNEG */
 	gpio_rcar_modify_bit(config, POSNEG, gpio, false);
+
+	/* Select "Input Enable/Disable" in INEN for Gen4 SoCs */
+#ifdef CONFIG_SOC_SERIES_RCAR_GEN4
+	gpio_rcar_modify_bit(config, INEN, gpio, !output);
+#endif
 
 	/* Select "General Input/Output Mode" in IOINTSEL */
 	gpio_rcar_modify_bit(config, IOINTSEL, gpio, false);
@@ -230,6 +236,11 @@ static int gpio_rcar_pin_interrupt_configure(const struct device *dev,
 	if (trig == GPIO_INT_TRIG_BOTH) {
 		gpio_rcar_modify_bit(config, BOTHEDGE, pin, true);
 	}
+
+	/* Select "Input Enable" in INEN for Gen4 SoCs */
+#ifdef CONFIG_SOC_SERIES_RCAR_GEN4
+	gpio_rcar_modify_bit(config, INEN, pin, true);
+#endif
 
 	gpio_rcar_modify_bit(config, IOINTSEL, pin, true);
 

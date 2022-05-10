@@ -15,7 +15,13 @@
 
 	chosen {
 		zephyr,sram = &sram0;
-		zephyr,console = &scif4; //linux is using scif0
+		/*
+		* Linux is using scif0
+		* Scif4 could be used for zephyr
+		* RX4 = GP2_08 = CN4 Pin 14
+		* TX4 = GP2_09 = CN4 Pin 16
+		*/
+		zephyr,console = &scif0;
 	};
 
 	leds {

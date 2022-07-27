@@ -10,6 +10,14 @@
 
 / {
     soc {
+        pfc: pin-controller@e6050000 {
+            compatible = "renesas,rcar-pfc";
+            reg = <0xe6050000 0x16c>, <0xe6050800 0x16c>,
+                  <0xe6051000 0x16c>, <0xe6051800 0x16c>,
+                  <0xffd90000 0x16c>, <0xffd90800 0x16c>,
+                  <0xffd91000 0x16c>, <0xffd91800 0x16c>;
+        };
+
         /* Clock controller
          * Using domain 0 as linux
          * Tried domain 3 unsuccessfully

@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2022 IoT.bzh
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ */
+
+#ifndef ZEPHYR_SOC_ARM_RENESAS_RCAR_GEN3_RCAR_PFC_DEFS_H_
+#define ZEPHYR_SOC_ARM_RENESAS_RCAR_GEN3_RCAR_PFC_DEFS_H_
+
+#define PFC_RCAR_GPSR 0x100
+#define PFC_RCAR_IPSR 0x200
+
+#endif /* ZEPHYR_SOC_ARM_RENESAS_RCAR_GEN3_RCAR_PFC_DEFS_H_ */

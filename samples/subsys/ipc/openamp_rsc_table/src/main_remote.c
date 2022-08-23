@@ -142,6 +142,16 @@ int mailbox_notify(void *priv, uint32_t id)
 	return 0;
 }
 
+#if defined(CONFIG_SOC_SERIES_RCAR_GEN3)
+#define MFISAREMBR0 0xe6260460
+#elif defined(CONFIG_SOC_SERIES_RCAR_GEN4)
+#define MFISAREMBR0 0xe6269460
+#endif
+static void write_rsc_table_address(void *rsc_tab_addr)
+{
+	sys_write32((uint32_t)rsc_tab_addr, MFISAREMBR0);
+}
+
 int platform_init(void)
 {
 	void *rsc_tab_addr;
@@ -181,6 +191,7 @@ int platform_init(void)
 	/* declare resource table region */
 	rsc_table_get(&rsc_tab_addr, &rsc_size);
 	rsc_table = (struct st_resource_table *)rsc_tab_addr;
+	write_rsc_table_address(rsc_tab_addr);
 
 	metal_io_init(&device->regions[1], rsc_table,
 		      (metal_phys_addr_t *)rsc_table, rsc_size, -1, 0, NULL);

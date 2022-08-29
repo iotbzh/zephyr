@@ -10,6 +10,14 @@ config CAN_RCAR
 	help
 	  Enable Renesas R-Car CAN Driver.
 
+config CAN_FD_RCAR
+	bool "Renesas R-Car CAN-FD Driver"
+	default y
+	depends on DT_HAS_RENESAS_RCAR_CANFD_ENABLED
+	select CAN_HAS_CANFD
+	help
+	  Enable Renesas R-Car CAN-FD Driver.
+
 config CAN_RCAR_MAX_FILTER
 	int "Maximum number of concurrent active filters"
 	depends on CAN_RCAR

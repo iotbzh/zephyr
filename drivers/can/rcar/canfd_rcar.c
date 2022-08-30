@@ -991,6 +991,72 @@ done:
 }
 #endif /* CONFIG_CAN_AUTO_BUS_OFF_RECOVERY */
 
+
+// = Linux - RCar_canfd_reset_controller
+static int canfd_rcar_reset_controller(const struct canfd_rcar_cfg *config)
+{
+	uint8_t ch;
+	int ret;
+
+	/* Check RAMINIT flag as CAN RAM initialization takes place
+	 * after the MCU reset
+	 */
+	ret = readbit_poll_timeout((config->reg_addr + RCANFD_GSTS),
+				   RCANFD_GSTS_GRAMINIT, 0, 2, 500000, false);//OK Zephyr
+	if (ret) {
+		LOG_ERR("Global raminit failed (%d)\n", ret);
+		return ret;
+	}
+
+	/* Transition to Global Reset mode */
+	canfd_rcar_clear_bit(config->reg_addr, RCANFD_GCTR, RCANFD_GCTR_GSLPR);//Exit stop mode
+	canfd_rcar_update_bit(config->reg_addr, RCANFD_GCTR, RCANFD_GCTR_GMDC_MASK, RCANFD_GCTR_GMDC_GRESET); //Not necessary if from stop mode. Only from other modes.
+
+	/* Ensure Global reset mode */
+	ret = readbit_poll_timeout((config->reg_addr + RCANFD_GSTS),
+				   RCANFD_GSTS_GRSTSTS, 1, 2, 500000, false);//OK Zephyr
+	if (ret) {
+		LOG_ERR("Global reset failed (%d)\n", ret);
+		return ret;
+	}
+
+	/* Reset Global error flags */
+	// canfd_rcar_write(config->reg_addr, RCANFD_GERFL, 0x0); //All flags in the RSCFDnCFDGERFL register are cleared to 0 in global reset mode.
+
+	/* Set the controller into appropriate mode */
+	// if ((gpriv->chip_id == R8A779A0) || (gpriv->chip_id == R8A779G0)) {
+	// 	if (gpriv->fdmode)
+			canfd_rcar_set_bit(config->reg_addr, RCANFD_V3U_CFDCFG,
+					   RCANFD_FDCFG_FDOE);
+	// 	else
+	// 		canfd_rcar_set_bit(config->reg_addr, RCANFD_V3U_CFDCFG,
+	// 				   RCANFD_FDCFG_CLOE);
+	/* }  else {
+		if (gpriv->fdmode)
+			canfd_rcar_set_bit(config->reg_addr, RCANFD_GRMCFG,
+					   RCANFD_GRMCFG_RCMC);
+		else
+			canfd_rcar_clear_bit(config->reg_addr, RCANFD_GRMCFG,
+					     RCANFD_GRMCFG_RCMC);
+	} */
+
+	/* Transition all Channels to reset mode */
+	for(ch=0, ch > config->max_channels; ch++) {
+		canfd_rcar_clear_bit(config->reg_addr, RCANFD_CCTR(ch), RCANFD_CCTR_CSLPR);
+		canfd_rcar_update_bit(config->reg_addr, RCANFD_CCTR(ch), RCANFD_CCTR_CHMDC_MASK,
+				      RCANFD_CCTR_CHDMC_CRESET);
+
+		/* Ensure Channel reset mode */
+		ret = readbit_poll_timeout((config->reg_addr + RCANFD_CSTS(ch)), RCANFD_CSTS_CRSTSTS, 1, 2, 500000, false);
+		if (ret) {
+			LOG_ERR("Channel %u reset failed (%d)\n", ch, ret);
+			return ret;
+		}
+	}
+	return 0;
+	//OK Zephyr
+}
+
 static int canfd_rcar_send(const struct device *dev, const struct can_frame *frame,
 			 k_timeout_t timeout, can_tx_callback_t callback,
 			 void *user_data)
@@ -1175,19 +1241,19 @@ static int canfd_rcar_init(const struct device *dev)
 		return ret;
 	}
 
-	// TODO: Wait for 
-	ret = canfd_rcar_enter_reset_mode(config, false);
+	ret = canfd_rcar_reset_controller(config);
 	__ASSERT(!ret, "Fail to set CAN controller to reset mode");
 	if (ret) {
 		return ret;
 	}
 
-	ret = canfd_rcar_leave_sleep_mode(config);
-	__ASSERT(!ret, "Fail to leave CAN controller from sleep mode");
-	if (ret) {
-		return ret;
-	}
-
+	// ret = canfd_rcar_leave_sleep_mode(config);
+	// __ASSERT(!ret, "Fail to leave CAN controller from sleep mode");
+	// if (ret) {
+	// 	return ret;
+	// }
+	
+	//TODO
 	timing.sjw = config->sjw;
 	if (config->sample_point) {
 		ret = can_calc_timing(dev, &timing, config->bus_speed,

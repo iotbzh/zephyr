@@ -33,6 +33,116 @@ LOG_MODULE_REGISTER(canfd_rcar, CONFIG_CAN_LOG_LEVEL);
 #define RCAR_CANFD_CTLR_IDFM_MIXED  BIT(2)        /* Mixed ID mode */
 #define RCAR_CANFD_CTLR_MBM         BIT(0)        /* Mailbox Mode select */
 
+/* Bit Configuration Register settings */
+#define RCAR_CANFD_BCR_TSEG1(x)   (((x) & 0x0f) << 20)
+#define RCAR_CANFD_BCR_BPR(x)     (((x) & 0x3ff) << 8)
+#define RCAR_CANFD_BCR_SJW(x)     (((x) & 0x3) << 4)
+#define RCAR_CANFD_BCR_TSEG2(x)   ((x) & 0x07)
+
+/* In R-CarV3U, Classical CAN and CAN FD */
+/* RSCFDnCFDCmDCFG */
+#define RCAR_CANFD_DCFG_DSJW(x)			(((x) & 0x7) << 24)
+#define RCAR_CANFD_DCFG_DTSEG2(x)		(((x) & 0x7) << 20)
+#define RCAR_CANFD_DCFG_DTSEG1(x)		(((x) & 0xf) << 16)
+#define RCAR_CANFD_DCFG_DBRP(x)			(((x) & 0xff) << 0)
+//NCFG = Normal CFG register
+//DCFG = Data   CFG register
+#define RCAR_CANFD_V3U_NCFG_NTSEG2(x)		(((x) & 0x7f) << 25)
+#define RCAR_CANFD_V3U_NCFG_NTSEG1(x)		(((x) & 0xff) << 17)
+#define RCAR_CANFD_V3U_NCFG_NSJW(x)		(((x) & 0x7f) << 10)
+#define RCAR_CANFD_V3U_NCFG_NBRP(x)		(((x) & 0x3ff) << 0)
+#define RCAR_CANFD_V3U_DCFG_DSJW(x)		RCAR_CANFD_DCFG_DSJW(x)
+#define RCAR_CANFD_V3U_DCFG_DTSEG2(x)		(((x) & 0xf) << 16)
+#define RCAR_CANFD_V3U_DCFG_DTSEG1(x)		(((x) & 0x1f) << 8)
+#define RCAR_CANFD_V3U_DCFG_DBRP(x)		RCAR_CANFD_DCFG_DBRP(x)
+
+/* RSCFDnCFDCmFDCFG */
+#define RCANFD_FDCFG_CLOE		BIT(30)
+#define RCANFD_FDCFG_FDOE		BIT(28)
+#define RCANFD_FDCFG_TDCE		BIT(9)
+#define RCANFD_FDCFG_TDCOC		BIT(8)
+#define RCANFD_FDCFG_TDCO(x)		(((x) & 0x7f) >> 16)
+
+/* Common registers */
+
+/* RSCFDnCFDCmNCFG / RSCFDnCmCFG */
+#define RCANFD_CCFG(m)			(0x0000 + (0x10 * (m)))
+/* RSCFDnCFDCmCTR / RSCFDnCmCTR */
+#define RCANFD_CCTR(m)			(0x0004 + (0x10 * (m)))
+/* RSCFDnCFDCmSTS / RSCFDnCmSTS */
+#define RCANFD_CSTS(m)			(0x0008 + (0x10 * (m)))
+/* RSCFDnCFDCmERFL / RSCFDnCmERFL */
+#define RCANFD_CERFL(m)			(0x000C + (0x10 * (m)))
+
+/* RSCFDnCFDGCFG / RSCFDnGCFG */
+#define RCANFD_GCFG			(0x0084)
+/* RSCFDnCFDGCTR / RSCFDnGCTR */
+#define RCANFD_GCTR			(0x0088)
+/* RSCFDnCFDGCTS / RSCFDnGCTS */
+#define RCANFD_GSTS			(0x008c)
+
+/* RSCFDnCFDGCFG / RSCFDnGCFG */
+#define RCANFD_GCFG_EEFE		BIT(6)
+#define RCANFD_GCFG_CMPOC		BIT(5)	/* CAN FD only */
+#define RCANFD_GCFG_DCS			BIT(4)
+#define RCANFD_GCFG_DCE			BIT(1)
+#define RCANFD_GCFG_TPRI		BIT(0)
+
+/* RSCFDnCFDGCTR / RSCFDnGCTR */
+#define RCANFD_GCTR_TSRST		BIT(16)
+#define RCANFD_GCTR_CFMPOFIE		BIT(11)	/* CAN FD only */
+#define RCANFD_GCTR_THLEIE		BIT(10)
+#define RCANFD_GCTR_MEIE		BIT(9)
+#define RCANFD_GCTR_DEIE		BIT(8)
+#define RCANFD_GCTR_GSLPR		BIT(2)
+#define RCANFD_GCTR_GMDC_MASK		(0x3)
+#define RCANFD_GCTR_GMDC_GOPM		(0x0)
+#define RCANFD_GCTR_GMDC_GRESET		(0x1)
+#define RCANFD_GCTR_GMDC_GTEST		(0x2)
+
+/* RSCFDnCFDGSTS / RSCFDnGSTS */
+#define RCANFD_GSTS_GRAMINIT		BIT(3)
+#define RCANFD_GSTS_GSLPSTS		BIT(2)
+#define RCANFD_GSTS_GHLTSTS		BIT(1)
+#define RCANFD_GSTS_GRSTSTS		BIT(0)
+
+/* RSCFDnCFDCmSTS / RSCFDnCmSTS */
+#define RCANFD_CSTS_COMSTS		BIT(7)
+#define RCANFD_CSTS_RECSTS		BIT(6)
+#define RCANFD_CSTS_TRMSTS		BIT(5)
+#define RCANFD_CSTS_BOSTS		BIT(4)
+#define RCANFD_CSTS_EPSTS		BIT(3)
+#define RCANFD_CSTS_SLPSTS		BIT(2)
+#define RCANFD_CSTS_HLTSTS		BIT(1)
+#define RCANFD_CSTS_CRSTSTS		BIT(0)
+
+/* RSCFDnCFDCmCTR / RSCFDnCmCTR */
+#define RCANFD_CCTR_CTME		BIT(24)
+#define RCANFD_CCTR_ERRD		BIT(23)
+#define RCANFD_CCTR_BOM_MASK		(0x3 << 21)
+#define RCANFD_CCTR_BOM_ISO		(0x0 << 21)
+#define RCANFD_CCTR_BOM_BENTRY		(0x1 << 21)
+#define RCANFD_CCTR_BOM_BEND		(0x2 << 21)
+#define RCANFD_CCTR_TDCVFIE		BIT(19)
+#define RCANFD_CCTR_SOCOIE		BIT(18)
+#define RCANFD_CCTR_EOCOIE		BIT(17)
+#define RCANFD_CCTR_TAIE		BIT(16)
+#define RCANFD_CCTR_ALIE		BIT(15)
+#define RCANFD_CCTR_BLIE		BIT(14)
+#define RCANFD_CCTR_OLIE		BIT(13)
+#define RCANFD_CCTR_BORIE		BIT(12)
+#define RCANFD_CCTR_BOEIE		BIT(11)
+#define RCANFD_CCTR_EPIE		BIT(10)
+#define RCANFD_CCTR_EWIE		BIT(9)
+#define RCANFD_CCTR_BEIE		BIT(8)
+#define RCANFD_CCTR_CSLPR		BIT(2)
+#define RCANFD_CCTR_CHMDC_MASK		(0x3)
+#define RCANFD_CCTR_CHDMC_COPM		(0x0)
+#define RCANFD_CCTR_CHDMC_CRESET	(0x1)
+#define RCANFD_CCTR_CHDMC_CHLT		(0x2)
+
+
+
 /* Mask Register */
 #define RCAR_CANFD_MKR0             0x0430
 #define RCAR_CANFD_MKR1             0x0434
@@ -164,6 +274,37 @@ LOG_MODULE_REGISTER(canfd_rcar, CONFIG_CAN_LOG_LEVEL);
 #define RCAR_CANFD_MB_SID_MASK      0x1FFC0000
 #define RCAR_CANFD_MB_EID_MASK      0x1FFFFFFF
 
+
+/* R-Car V3U Classical and CAN FD mode specific register map */
+#define RCANFD_V3U_CFDCFG		(0x1314) 		//Registre trouvé dans la DOC GEN4. Registre différent dans la doc V3U.
+#define RCANFD_V3U_DCFG(m)		(0x1400 + (0x20 * (m)))
+
+/* Constants */
+#define RCANFD_FIFO_DEPTH		8	/* Tx FIFO depth */
+#define RCANFD_NAPI_WEIGHT		8	/* Rx poll quota */
+
+#if defined(SOC_R8A779A0)
+#define RCANFD_NUM_CHANNELS		8	/* 8 channels max */
+#else
+#define RCANFD_NUM_CHANNELS		1	/* 1 channels max */
+#endif
+#define RCANFD_CHANNELS_MASK		BIT((RCANFD_NUM_CHANNELS) - 1)
+
+#define RCANFD_GAFL_PAGENUM(entry)	((entry) / 16)
+#define RCANFD_CHANNEL_NUMRULES		1	/* only one rule per channel */
+
+/* Rx FIFO is a global resource of the controller. There are 8 such FIFOs
+ * available. Each channel gets a dedicated Rx FIFO (i.e.) the channel
+ * number is added to RFFIFO index.
+ */
+#define RCANFD_RFFIFO_IDX		0
+
+/* Tx/Rx or Common FIFO is a per channel resource. Each channel has 3 Common
+ * FIFOs dedicated to them. Use the first (index 0) FIFO out of the 3 for Tx.
+ */
+#define RCANFD_CFFIFO_IDX		0
+
+
 typedef void (*init_func_t)(const struct device *dev);
 
 struct canfd_rcar_cfg {
@@ -182,6 +323,7 @@ struct canfd_rcar_cfg {
 	const struct pinctrl_dev_config *pcfg;
 	const struct device *phy;
 	uint32_t max_bitrate;
+	uint8_t max_channels;
 };
 
 struct canfd_rcar_tx_cb {
@@ -207,16 +349,83 @@ struct canfd_rcar_data {
 };
 
 static inline uint16_t canfd_rcar_read16(const struct canfd_rcar_cfg *config,
-				       uint16_t offs)
+					 uint16_t offs)
 {
 	return sys_read16(config->reg_addr + offs);
 }
 
 static inline void canfd_rcar_write16(const struct canfd_rcar_cfg *config,
-				    uint16_t offs, uint16_t value)
+				      uint16_t offs, uint16_t value)
 {
 	sys_write16(value, config->reg_addr + offs);
 }
+
+static inline uint32_t canfd_rcar_read(const struct canfd_rcar_cfg *config,
+				       uint32_t offs)
+{
+	return sys_read32(config->reg_addr + offs);
+}
+
+static inline void canfd_rcar_write(const struct canfd_rcar_cfg *config,
+				    uint32_t offs, uint32_t value)
+{
+	sys_write32(value, config->reg_addr + offs);
+}
+
+static void canfd_rcar_update_bit(const struct canfd_rcar_cfg *config, uint32_t offs,
+				  uint32_t bit_mask, bool value)
+{
+	uint32_t reg_val = canfd_rcar_read(config, offs);
+
+	reg_val &= ~(bit_mask);
+	reg_val |= value;
+
+	canfd_rcar_write(config, offs, reg_val);
+}
+
+static void canfd_rcar_set_bit(const struct canfd_rcar_cfg *config, uint32_t offs, uint32_t value)
+{
+	canfd_rcar_update_bit(config, offs, value, value);
+}
+
+static void canfd_rcar_clear_bit(const struct canfd_rcar_cfg *config, uint32_t offs, uint32_t reg_mask)
+{
+	canfd_rcar_update_bit(config, offs, reg_mask, 0);
+}
+
+/**
+ * readbit_poll_timeout - Periodically poll an address until a condition is
+ *			met or a timeout occurs
+ * @reg: accessor function (takes @args as its arguments)
+ * @bit: Variable to read the value into
+ * @brk_value: Break condition (usually involving @val)
+ * @sleep_us: Maximum time to sleep between reads in us (0
+ *            tight-loops).  Should be less than ~20ms since usleep_range
+ *            is used (see Documentation/timers/timers-howto.rst).
+ * @timeout_us: Timeout in us, 0 means never timeout
+ * @sleep_before_read: if it is true, sleep @sleep_us before read.
+ * Returns 0 on success and -ETIMEDOUT upon a timeout. In either
+ * case, the last read value at @args is stored in @val. Must not
+ * be called from atomic context if sleep_us or timeout_us are used.
+ */
+static void readbit_poll_timeout(uint32_t reg, uint32_t bit, bool brk_value, uint32_t sleep_us,
+				 uint32_t timeout_us, bool sleep_before_read)
+{
+	/* Wait for controller to apply high bit timing settings */
+	if (sleep_before_read && sleep_us) {
+		k_usleep(sleep_us);
+	}
+
+	for (i = 0; i < timeout_us; i += sleep_us) {
+		if (canfd_rcar_read(config, reg) & bit == brk_value) {
+			return 0;
+		}
+		k_usleep(sleep_us);
+	}
+
+	return -ETIMEDOUT;
+}
+
 
 static void canfd_rcar_tx_done(const struct device *dev)
 {
@@ -575,7 +784,7 @@ static int canfd_rcar_get_capabilities(const struct device *dev, can_mode_t *cap
 {
 	ARG_UNUSED(dev);
 
-	*cap = CAN_MODE_NORMAL | CAN_MODE_LOOPBACK | CAN_MODE_LISTENONLY;
+	*cap = CAN_MODE_NORMAL | CAN_MODE_LOOPBACK | CAN_MODE_LISTENONLY | CAN_MODE_FD;
 
 	return 0;
 }
@@ -677,8 +886,8 @@ static int canfd_rcar_set_timing(const struct device *dev,
 		uint8_t value;
 	};
 
-	struct reg_backup regs[3] = { { RCAR_CAN_TCR, 0 }, { RCAR_CAN_TFCR, 0 }
-				      , { RCAR_CAN_RFCR, 0 } };
+	// struct reg_backup regs[3] = { { RCAR_CANFD_TCR, 0 }, { RCAR_CANFD_TFCR, 0 }
+	// 			      , { RCAR_CANFD_RFCR, 0 } };
 
 	k_mutex_lock(&data->inst_mutex, K_FOREVER);
 
@@ -687,9 +896,9 @@ static int canfd_rcar_set_timing(const struct device *dev,
 	 * transmit and receive FIFOs (TFCR and RFCR).
 	 * Storing these reg values to restore them once back in halt mode.
 	 */
-	for (int i = 0; i < 3; i++) {
-		regs[i].value = sys_read8(config->reg_addr + regs[i].address);
-	}
+	// for (int i = 0; i < 3; i++) {
+	// 	regs[i].value = sys_read8(config->reg_addr + regs[i].address);
+	// }
 
 	/* Switching to reset mode */
 	ret = canfd_rcar_enter_reset_mode(config, true);
@@ -707,9 +916,9 @@ static int canfd_rcar_set_timing(const struct device *dev,
 	}
 
 	/* Restoring registers */
-	for (int i = 0; i < 3; i++) {
-		sys_write8(regs[i].value, config->reg_addr + regs[i].address);
-	}
+	// for (int i = 0; i < 3; i++) {
+	// 	sys_write8(regs[i].value, config->reg_addr + regs[i].address);
+	// }
 
 	/* Go back to operation mode */
 	ret = canfd_rcar_enter_operation_mode(config);
@@ -1158,6 +1367,7 @@ static const struct can_driver_api canfd_rcar_driver_api = {
 		.pcfg = PINCTRL_DT_INST_DEV_CONFIG_GET(n),			\
 		.phy = DEVICE_DT_GET_OR_NULL(DT_INST_PHANDLE(n, phys)),		\
 		.max_bitrate = DT_INST_CAN_TRANSCEIVER_MAX_BITRATE(n, 1000000),	\
+		.max_channels = RCANFD_NUM_CHANNELS,				\
 	};									\
 	static struct canfd_rcar_data canfd_rcar_data_##n;			\
 										\

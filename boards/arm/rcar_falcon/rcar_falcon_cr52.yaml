@@ -1,0 +1,11 @@
+identifier: rcar_falcon_cr52
+name: Cortex r52 for Renesas Falcon
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - gpio
+  - clock_control
+  - uart

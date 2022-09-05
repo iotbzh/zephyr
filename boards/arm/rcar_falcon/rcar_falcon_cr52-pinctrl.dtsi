@@ -1,0 +1,25 @@
+/*
+ * Copyright (c) 2022 IoT.bzh
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <dt-bindings/pinctrl/renesas/pinctrl-r8a779a0.h>
+
+&pfc {
+	scif0_data_tx_default: scif0_data_tx_default {
+		pin = <PIN_HRX0 FUNC_RX0>;
+	};
+
+	scif0_data_rx_default: scif0_data_rx_default {
+		pin = <PIN_HTX0 FUNC_TX0>;
+	};
+
+	scif4_data_tx_default: scif4_data_tx_default {
+		pin = <PIN_GP2_09 FUNC_TX4>;
+	};
+
+	scif4_data_rx_default: scif4_data_rx_default {
+		pin = <PIN_GP2_08 FUNC_RX4>;
+	};
+};

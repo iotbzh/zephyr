@@ -71,6 +71,7 @@ static const uint16_t srcr[] = {
 
 /* SCIF clock */
 #define S0D12_PER_CLK_RATE        66600000
+#define S1D8_CLK_RATE             66600000
 #endif /* CONFIG_SOC_SERIES_RCAR_GEN3 */
 
 void rcar_cpg_write(uint32_t base_address, uint32_t reg, uint32_t val);

@@ -8,4 +8,8 @@ choice
 config SOC_R8A779F0
 	bool "r8a779f0"
 
+config SOC_R8A779A0
+	bool "r8a779a0"
+
 endchoice
+

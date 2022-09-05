@@ -1,0 +1,69 @@
+/*
+ * Copyright (c) 2022 IoT.bzh
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ */
+
+/dts-v1/;
+#include <arm/renesas/gen4/r8a779a0.dtsi>
+#include "rcar_falcon_cr52-pinctrl.dtsi"
+
+/ {
+	model = "Renesas Falcon board";
+	compatible = "renesas,falcon-cr52";
+
+	chosen {
+		zephyr,sram = &sram0;
+		/*
+		 * Linux is using scif0
+		 * Scif4 could be used for zephyr
+		 * RX4 = GP2_08 = CN4 Pin 14
+		 * TX4 = GP2_09 = CN4 Pin 16
+		 */
+		zephyr,console = &scif4;
+		zephyr,shell-uart = &scif4;
+	};
+
+	leds {
+		compatible = "gpio-leds";
+
+		user_led: led_1 {
+			gpios = <&gpio4 18 GPIO_ACTIVE_HIGH>;
+			label = "User LED";
+		};
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		user_button: sw48 {
+			gpios = <&gpio6 19 GPIO_ACTIVE_LOW>;
+			label = "User switch";
+		};
+	};
+
+	aliases {
+		led0 = &user_led;
+		sw0  = &user_button;
+	};
+};
+
+&scif0 {
+	pinctrl-0 = <&scif0_data_tx_default &scif0_data_rx_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&scif4 {
+	pinctrl-0 = <&scif4_data_tx_default &scif4_data_rx_default>;
+	pinctrl-names = "default";
+	status = "okay";
+};
+
+&gpio4 {
+	status = "okay";
+};
+
+&gpio6 {
+	status = "okay";
+};

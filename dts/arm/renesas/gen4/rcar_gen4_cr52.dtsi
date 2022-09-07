@@ -52,16 +52,6 @@
             status = "okay";
         };
 
-        /* Clock controller
-         * Using domain 0 as linux
-         * Tried domain 3 unsuccessfully
-         */
-        cpg: clock-controller@e6150000 {
-            compatible = "renesas,rcar-cpg-mssr";
-            reg = <0xe6150000 0x4000>;
-            #clock-cells = <2>;
-        };
-
         scif0: serial@e6e60000 {
             compatible = "renesas,rcar-scif";
             reg = <0xe6e60000 0x64>;

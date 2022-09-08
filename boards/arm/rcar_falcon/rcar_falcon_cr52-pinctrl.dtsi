@@ -7,6 +7,14 @@
 #include <dt-bindings/pinctrl/renesas/pinctrl-r8a779a0.h>
 
 &pfc {
+	canfd0_data_a_tx_default: canfd0_data_a_tx_default {
+		pin = <PIN_CANFD0_TX FUNC_CANFD0_TX>;
+	};
+
+	canfd0_data_a_rx_default: canfd0_data_a_rx_default {
+		pin = <PIN_CANFD0_RX FUNC_CANFD0_RX>;
+	};
+
 	scif0_data_tx_default: scif0_data_tx_default {
 		pin = <PIN_HRX0 FUNC_RX0>;
 	};

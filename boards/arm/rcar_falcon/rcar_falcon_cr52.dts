@@ -67,3 +67,48 @@
 &gpio6 {
 	status = "okay";
 };
+
+&can0 {
+	pinctrl-0 = <&canfd0_data_a_tx_default &canfd0_data_a_rx_default>; //TODO: add others channels
+	pinctrl-names = "default";
+	status = "okay";
+	bus-speed = <125000>;
+
+	//Should have a mask like 0b01010101
+	channel0 {
+		status = "okay";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel1 {
+		status = "disabled";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel2 {
+		status = "okay";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel3 {
+		status = "disabled";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel4 {
+		status = "okay";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel5 {
+		status = "disabled";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel6 {
+		status = "okay";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+	channel7 {
+		status = "disabled";
+		max-bitrate = <0>; //Useless but mandatory due to can-controller.yaml
+	};
+
+	can-transceiver {
+		max-bitrate = <5000000>;
+	};
+};

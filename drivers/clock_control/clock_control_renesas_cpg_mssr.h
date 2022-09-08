@@ -36,7 +36,7 @@ static const uint16_t srcr[] = {
 
 /* CANFD Clock */
 #define CANFDCKCR_PARENT_CLK_RATE 800000000
-#define CANFDCKCR_DIVIDER_MASK    0x1FF
+#define CANFDCKCR_DIVIDER_MASK    0x3F
 
 /* SCIF clock */
 #define S3D4_CLK_RATE             66600000
@@ -72,7 +72,19 @@ static const uint16_t srcr[] = {
 /* SCIF clock */
 #define S0D12_PER_CLK_RATE        66600000
 #define S1D8_CLK_RATE             66600000
-#endif /* CONFIG_SOC_SERIES_RCAR_GEN3 */
+
+/* CAN-FD Clock Frequency Control Register */
+#define CANFDCKCR                 0x878	// 0xE6150878
+
+/* Clock stop bit */
+#define CANFDCKCR_CKSTP           BIT(8)
+
+/* CANFD Clock */
+#define S3D2_CLK_RATE             133330000
+#define CANFDCKCR_PARENT_CLK_RATE 800000000 /* =(PLL5/4) */
+#define CANFDCKCR_DIVIDER_MASK    0x3F
+#define CANFD_CLK_RATE            CANFDCKCR_PARENT_CLK_RATE
+#endif /* CONFIG_SOC_SERIES_RCAR */
 
 void rcar_cpg_write(uint32_t base_address, uint32_t reg, uint32_t val);
 

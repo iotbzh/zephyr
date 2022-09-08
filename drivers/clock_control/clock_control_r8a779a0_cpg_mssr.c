@@ -24,6 +24,50 @@ struct r8a779a0_cpg_mssr_config {
 	mm_reg_t base_address;
 };
 
+static int r8a779a0_cpg_core_clock_endisable(uint32_t base_address, uint32_t module,
+				     uint32_t rate, bool enable)
+{
+	uint32_t divider;
+	unsigned int key;
+	int ret = 0;
+
+	/* Only support CANFD core clock at the moment */
+	if (module != R8A779A0_CLK_CANFD) {
+		return -EINVAL;
+	}
+
+	key = irq_lock();
+
+	if (enable) {
+		if (rate > 0) {	//fcan is fixed by bus_clk to 40 MHz (max)
+			rate *= 2;	// fCAN = rate = clkc / 2
+			if ((CANFDCKCR_PARENT_CLK_RATE % rate) != 0) {
+				LOG_ERR("Can not generate %u from CANFD parent clock", rate);
+				ret = -EINVAL;
+				goto unlock;
+			}
+
+			divider = (CANFDCKCR_PARENT_CLK_RATE / rate) - 1;	//Should be equal to 19. Reset divider is 63.
+			if (divider > CANFDCKCR_DIVIDER_MASK) {
+				LOG_ERR("Can not generate %u from CANFD parent clock", rate);
+				ret = -EINVAL;
+				goto unlock;
+			}
+
+			rcar_cpg_write(base_address, CANFDCKCR, divider);
+		} else {
+			LOG_ERR("Can not enable a clock at %u Hz", rate);
+			ret = -EINVAL;
+		}
+	} else {
+		rcar_cpg_write(base_address, CANFDCKCR, CANFDCKCR_CKSTP);
+	}
+
+unlock:
+	irq_unlock(key);
+	return ret;
+}
+
 int r8a779a0_cpg_mssr_start_stop(const struct device *dev,
 				clock_control_subsys_t sys, bool enable)
 {
@@ -33,6 +77,10 @@ int r8a779a0_cpg_mssr_start_stop(const struct device *dev,
 
 	if (clk->domain == CPG_MOD) {
 		ret = rcar_cpg_mstp_clock_endisable(config->base_address, clk->module, enable);
+	}
+	else if (clk->domain == CPG_CORE) {
+		ret = r8a779a0_cpg_core_clock_endisable(config->base_address, clk->module,
+						       clk->rate, enable);
 	}
 
 	return ret;
@@ -54,7 +102,9 @@ static int r8a779a0_cpg_get_rate(const struct device *dev,
 				clock_control_subsys_t sys,
 				uint32_t *rate)
 {
+	const struct r8a779a0_cpg_mssr_config *config = dev->config;
 	struct rcar_cpg_clk *clk = (struct rcar_cpg_clk *)sys;
+	uint32_t val;
 	int ret = 0;
 
 	if (clk->domain != CPG_CORE) {
@@ -64,6 +114,19 @@ static int r8a779a0_cpg_get_rate(const struct device *dev,
 	switch (clk->module) {
 	case R8A779A0_CLK_S1D8:
 		*rate = S1D8_CLK_RATE;
+		break;
+	case R8A779A0_CLK_CANFD:
+		val = sys_read32(config->base_address + CANFDCKCR);
+		if (val & CANFDCKCR_CKSTP) {
+			*rate = 0;
+		} else {
+			val &= CANFDCKCR_DIVIDER_MASK;
+			*rate = CANFDCKCR_PARENT_CLK_RATE / (val + 1);
+			*rate /= 2;	// fCAN = rate = clkc / 2
+		}
+		break;
+	case R8A779A0_CLK_S3D2:
+		*rate = S3D2_CLK_RATE;
 		break;
 	default:
 		ret = -ENOTSUP;
@@ -85,7 +148,7 @@ static const struct clock_control_driver_api r8a779a0_cpg_mssr_api = {
 	.get_rate = r8a779a0_cpg_get_rate,
 };
 
-#define R8A779a0_MSSR_INIT(inst)							  \
+#define R8A779a0_MSSR_INIT(inst)						  \
 	static struct r8a779a0_cpg_mssr_config r8a779a0_cpg_mssr##inst##_config = { \
 		.base_address = DT_INST_REG_ADDR(inst)				  \
 	};									  \

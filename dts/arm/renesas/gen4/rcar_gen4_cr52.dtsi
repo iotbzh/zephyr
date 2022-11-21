@@ -38,9 +38,9 @@
     soc {
         interrupt-parent = <&gic>;
 
-        sram0: memory@40040000 {
+        sram0: memory@0 {
             compatible = "mmio-sram";
-            reg = <0x40040000 0x1fc0000>;
+            reg = <0x0 0x200000>;
         };
 
         gic: interrupt-controller@f0000000 {

@@ -1,0 +1,6 @@
+# Copyright (c) 2022 IoT.bzh
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_RCAR_S4SK_CR52
+	bool "Cortex-R52 for Renesas S4SK"
+	depends on SOC_R8A779F0

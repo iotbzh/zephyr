@@ -86,7 +86,7 @@ static const struct clock_control_driver_api r8a779f0_cpg_mssr_api = {
 	.get_rate = r8a779f0_cpg_get_rate,
 };
 
-#define R8A779f0_MSSR_INIT(inst)							  \
+#define R8A779f0_MSSR_INIT(inst)						  \
 	static struct r8a779f0_cpg_mssr_config r8a779f0_cpg_mssr##inst##_config = { \
 		.base_address = DT_INST_REG_ADDR(inst)				  \
 	};									  \

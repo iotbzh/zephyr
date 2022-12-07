@@ -15,6 +15,7 @@
 #include <zephyr/drivers/pinctrl.h>
 #include <zephyr/irq.h>
 #include <zephyr/spinlock.h>
+#include <zephyr/kernel.h>
 
 struct uart_rcar_cfg {
 	uint32_t reg_addr;
@@ -267,6 +268,8 @@ static int uart_rcar_init(const struct device *dev)
 	const struct uart_rcar_cfg *config = dev->config;
 	struct uart_rcar_data *data = dev->data;
 	int ret;
+
+	k_busy_wait(10 * USEC_PER_SEC);
 
 	/* Configure dt provided device signals when available */
 	ret = pinctrl_apply_state(config->pcfg, PINCTRL_STATE_DEFAULT);

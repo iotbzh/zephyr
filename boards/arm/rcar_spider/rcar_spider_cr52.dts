@@ -16,6 +16,7 @@
 	chosen {
 		zephyr,sram = &sram0;
 		zephyr,console = &scif0; /* Linux is using scif3 */
+		zephyr,shell-uart = &scif0;
 	};
 
 	leds {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, IoT.bzh
+ * Copyright (c) 2020, 2023 IoT.bzh
  *
  * SPDX-License-Identifier: Apache-2.0
  */
@@ -9,20 +9,26 @@
 #include <zephyr/drivers/ipm.h>
 #include <zephyr/drivers/clock_control.h>
 #include <zephyr/drivers/clock_control/renesas_cpg_mssr.h>
+#include <zephyr/logging/log.h>
+LOG_MODULE_REGISTER(rcar_ipm, LOG_LEVEL_DBG);
 
 #define DT_DRV_COMPAT renesas_rcar_mfis
+
+#if defined(CONFIG_SOC_SERIES_RCAR_GEN3)
 /* Cortex A53/A57 -> Cortex R7 */
-
-/* rx req */
-#define MFISARIICR0 0x0
-/* tx ack*/
-#define MFISARIICR1 0x8
-
+#define MFISARIICR0 0x400	/* rx req */
+#define MFISARIICR1 0x408 	/* tx ack*/
 /* Cortex R7 -> Cortex A53/A57 */
-/* rx ack*/
-#define MFISAREICR0 0x4
-/* tx req */
-#define MFISAREICR1 0xc
+#define MFISAREICR0 0x404 	/* rx ack*/
+#define MFISAREICR1 0x40c 	/* tx req */
+#elif defined (CONFIG_SOC_SERIES_RCAR_GEN4)
+/* Cortex A76 -> Cortex R52 */
+#define MFISARIICR0 0x1400 	/* rx req */
+#define MFISARIICR1 0x2408	/* tx ack*/
+/* Cortex R52 -> Cortex A76 */
+#define MFISAREICR0 0x9404	/* rx ack*/
+#define MFISAREICR1 0x940c	/* tx req */
+#endif
 
 static K_SEM_DEFINE(send_sem, 0, 1);
 

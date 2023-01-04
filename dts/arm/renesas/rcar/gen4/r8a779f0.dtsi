@@ -55,6 +55,17 @@
 			status = "disabled";
 		};
 
+		mfis: mfis@e6260000 {
+            compatible = "renesas,rcar-mfis";
+            reg = <0xe6260000 0xB000>;
+            interrupt-parent = <&gic>;
+            interrupts = <GIC_SPI 321 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>, //AP to AR Core0 I interrupt
+                         <GIC_SPI 323 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>; //AP to AR Core1 I interrupt
+            interrupt-names = "rxo", "txf";
+            clocks = <&cpg CPG_MOD 617>;
+            status = "disabled";
+        };
+
 		/* Zephyr console */
 		scif0: serial@e6e60000 {
 			interrupts = <GIC_SPI 249 IRQ_TYPE_LEVEL IRQ_DEFAULT_PRIORITY>;

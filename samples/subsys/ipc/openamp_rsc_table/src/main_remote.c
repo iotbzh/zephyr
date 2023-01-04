@@ -142,8 +142,11 @@ int mailbox_notify(void *priv, uint32_t id)
 	return 0;
 }
 
-
+#if defined(CONFIG_SOC_SERIES_RCAR_GEN3)
 #define MFISAREMBR0 0xe6260460
+#elif defined(CONFIG_SOC_SERIES_RCAR_GEN4)
+#define MFISAREMBR0 0xe6269460
+#endif
 static void write_rsc_table_address(void *rsc_tab_addr)
 {
 	sys_write32((uint32_t)rsc_tab_addr, MFISAREMBR0);

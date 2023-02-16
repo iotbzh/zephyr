@@ -15,8 +15,8 @@
 
 	chosen {
 		zephyr,sram = &sram0;
-		zephyr,console = &scif3; /* Linux is using scif3 */
-		zephyr,shell-uart = &scif3;
+		zephyr,console = &scif0; /* Linux is using scif3=hscif0 */
+		zephyr,shell-uart = &scif0;
 	};
 
 	leds {
@@ -46,7 +46,7 @@
 &scif0 {
 	pinctrl-0 = <&scif0_data_tx_default &scif0_data_rx_default>;
 	pinctrl-names = "default";
-	status = "disabled";
+	status = "okay";
 };
 
 /* Linux console */
@@ -54,7 +54,7 @@
 	pinctrl-0 = <&scif3_data_tx_default &scif3_data_rx_default>;
 	pinctrl-names = "default";
 	current-speed = <115200>;
-	status = "okay";
+	status = "disabled";
 };
 
 &gpio0 {

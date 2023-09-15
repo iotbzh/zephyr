@@ -47,6 +47,7 @@ GTEXT(z_arm_platform_init)
 SECTION_SUBSEC_FUNC(TEXT, _reset_section, z_arm_reset)
 SECTION_SUBSEC_FUNC(TEXT, _reset_section, __start)
 #if defined(CONFIG_AARCH32_ARMV8_R)
+    @ b z_arm_reset
     /* Check if we are starting in HYP mode */
     mrs r0, cpsr
     and r0, r0, #MODE_MASK

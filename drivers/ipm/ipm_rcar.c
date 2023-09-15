@@ -17,16 +17,16 @@ LOG_MODULE_REGISTER(rcar_ipm, LOG_LEVEL_DBG);
 #if defined(CONFIG_SOC_SERIES_RCAR_GEN3)
 /* Cortex A53/A57 -> Cortex R7 */
 #define MFISARIICR0 0x400	/* rx req */
-#define MFISARIICR1 0x408 	/* tx ack*/
+#define MFISARIICR1 0x408 	/* tx ack */
 /* Cortex R7 -> Cortex A53/A57 */
-#define MFISAREICR0 0x404 	/* rx ack*/
+#define MFISAREICR0 0x404 	/* rx ack */
 #define MFISAREICR1 0x40c 	/* tx req */
 #elif defined (CONFIG_SOC_SERIES_RCAR_GEN4)
 /* Cortex A76 -> Cortex R52 */
 #define MFISARIICR0 0x1400 	/* rx req */
-#define MFISARIICR1 0x2408	/* tx ack*/
+#define MFISARIICR1 0x2408	/* tx ack */
 /* Cortex R52 -> Cortex A76 */
-#define MFISAREICR0 0x9404	/* rx ack*/
+#define MFISAREICR0 0x9404	/* rx ack */
 #define MFISAREICR1 0x940c	/* tx req */
 #endif
 
@@ -46,7 +46,7 @@ struct rcar_mfis_data {
 };
 
 #define RCAR_MFIS_CTRL_INTR		BIT(0)
-#define RCAR_MFIS_CTRL_TX               BIT(1)
+#define RCAR_MFIS_CTRL_TX       BIT(1)
 
 static void rcar_mfis_rx_isr(const struct device *dev)
 {
@@ -54,16 +54,19 @@ static void rcar_mfis_rx_isr(const struct device *dev)
 	const struct rcar_mfis_data *data = dev->data;
 	unsigned int value = 0;
 	uint32_t reg_val;
-
+	
 	if (data->callback)
 		data->callback(dev, data->user_data, 0, &value);
-
-	sys_write32(1, config->reg_addr + MFISAREICR0);
 
 	/* Clear interrupt */
 	reg_val = sys_read32(config->reg_addr + MFISARIICR0);
 	reg_val &= ~RCAR_MFIS_CTRL_INTR;
 	sys_write32(reg_val, config->reg_addr + MFISARIICR0);
+
+	/* rx ack */
+	reg_val = sys_read32(config->reg_addr + MFISAREICR0);
+	reg_val |= RCAR_MFIS_CTRL_INTR;
+	sys_write32(reg_val, config->reg_addr + MFISAREICR0);
 }
 
 static void rcar_mfis_tx_isr(const struct device *dev)
@@ -74,7 +77,6 @@ static void rcar_mfis_tx_isr(const struct device *dev)
 	reg_val = sys_read32(config->reg_addr + MFISARIICR1);
 	reg_val &= ~RCAR_MFIS_CTRL_INTR;
 	sys_write32(reg_val, config->reg_addr + MFISARIICR1);
-
 
 	reg_val = sys_read32(config->reg_addr + MFISAREICR1);
 	reg_val &= ~RCAR_MFIS_CTRL_TX;
@@ -93,17 +95,14 @@ static int rcar_mfis_ipm_send(const struct device *dev, int wait, uint32_t id,
 	const struct rcar_mfis_config *config = dev->config;
 	uint32_t reg_val;
 	int err;
-
 	while(is_channel_busy(config->reg_addr + MFISAREICR1))
 		;
 	/* Mark the channel as busy */
-	reg_val = RCAR_MFIS_CTRL_TX;
-
+	reg_val = sys_read32(config->reg_addr + MFISAREICR1);
+	reg_val |= RCAR_MFIS_CTRL_TX;
 	/* Raise interrupt on other side */
 	reg_val |= RCAR_MFIS_CTRL_INTR;
-
 	sys_write32(reg_val, config->reg_addr + MFISAREICR1);
-
 	err = k_sem_take(&send_sem, Z_TIMEOUT_MS(500));
 
 	return err;
@@ -124,7 +123,6 @@ static void rcar_mfis_ipm_register_callback(const struct device *dev,
 					 void *user_data)
 {
 	struct rcar_mfis_data *driver_data = dev->data;
-
 	driver_data->callback = cb;
 	driver_data->user_data = user_data;
 }
@@ -138,7 +136,6 @@ static int rcar_mfis_init(const struct device *dev)
 {
 	const struct rcar_mfis_config *config = dev->config;
 	int ret;
-
 	ret = clock_control_on(config->clock_dev,
 			       (clock_control_subsys_t *) &config->mod_clk);
 	if (ret < 0) {
@@ -146,6 +143,8 @@ static int rcar_mfis_init(const struct device *dev)
 	}
 
 	config->irq_config_func(dev);
+
+	/* TODO: add unlock of Write Protection register here (0xE6260900) ? */
 
 	return 0;
 }

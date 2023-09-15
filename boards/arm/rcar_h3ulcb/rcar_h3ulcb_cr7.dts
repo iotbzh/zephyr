@@ -25,7 +25,7 @@
 	/* Size to verify */
         sram_shm: memory@42000000 {
                 compatible = "mmio-sram";
-                reg = <0x42000000 0x400000>;
+                reg = <0x42000000 0x6000>;
 	};
 
 	leds {

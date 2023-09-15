@@ -6,7 +6,7 @@
  */
 
 /dts-v1/;
-#include <arm/renesas/gen4/r8a779f0.dtsi>
+#include <arm/renesas/rcar/gen4/r8a779f0.dtsi>
 #include "rcar_s4sk_cr52-pinctrl.dtsi"
 
 / {

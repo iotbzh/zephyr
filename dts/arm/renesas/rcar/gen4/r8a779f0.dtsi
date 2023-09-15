@@ -55,7 +55,7 @@
 			status = "disabled";
 		};
 
-		mfis: mfis@e6260000 {
+		mfis: mfis@e6260000 { //The inter-processor communication controller (IPCC) 
             compatible = "renesas,rcar-mfis";
             reg = <0xe6260000 0xB000>;
             interrupt-parent = <&gic>;

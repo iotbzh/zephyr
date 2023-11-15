@@ -1,0 +1,11 @@
+identifier: rcar_s4sk_cr52
+name: Cortex r52 for Renesas S4SK
+type: mcu
+arch: arm
+toolchain:
+  - zephyr
+  - gnuarmemb
+supported:
+  - gpio
+  - clock_control
+  - uart

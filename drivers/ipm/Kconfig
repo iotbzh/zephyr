@@ -63,6 +63,11 @@ source "drivers/ipm/Kconfig.ivshmem"
 source "drivers/ipm/Kconfig.sedi"
 
 
+config IPM_RCAR
+	bool "Renesas RCAR IPM driver"
+	help
+	  Renesas RCAR IPM driver
+
 module = IPM
 module-str = ipm
 source "subsys/logging/Kconfig.template.log_config"

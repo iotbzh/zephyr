@@ -2,7 +2,13 @@ CONFIG_SOC_R8A779F0=y
 CONFIG_SOC_SERIES_RCAR_GEN4=y
 CONFIG_BOARD_RCAR_SPIDER_CR52=y
 CONFIG_CLOCK_CONTROL=y
+#FIXME: What is the correct counter frequency ?
+#CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=107200000
 CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=12500000
+#The choice of tick rate is configurable by this option. Also the number of cycles
+#per tick should be chosen so that 1 millisecond is exactly represented by an integral
+#number of ticks. 
+#CONFIG_SYS_CLOCK_TICKS_PER_SEC=1000
 CONFIG_CONSOLE=y
 CONFIG_RAM_CONSOLE=y
 CONFIG_FLASH_SIZE=0

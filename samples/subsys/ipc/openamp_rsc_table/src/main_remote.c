@@ -142,13 +142,19 @@ int mailbox_notify(void *priv, uint32_t id)
 	return 0;
 }
 
+#define MFISWPCNTR 0xe6260900
 #if defined(CONFIG_SOC_SERIES_RCAR_GEN3)
 #define MFISAREMBR0 0xe6260460
 #elif defined(CONFIG_SOC_SERIES_RCAR_GEN4)
 #define MFISAREMBR0 0xe6269460
+// #define MFISWACNTR 0xe6260904
 #endif
 static void write_rsc_table_address(void *rsc_tab_addr)
 {
+	// sys_write32((uint32_t)0xacce9460, MFISWACNTR);
+	// sys_write32((uint32_t)(0xacce0000 | (MFISWPCNTR & 0xFFFF)), MFISWACNTR);
+	/* Unlocking MFIS registers, should not be done globally ? */
+	sys_write32((uint32_t)(0xacce0000 | 0x1), MFISWPCNTR);
 	sys_write32((uint32_t)rsc_tab_addr, MFISAREMBR0);
 }
 
